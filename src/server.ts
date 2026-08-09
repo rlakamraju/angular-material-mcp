@@ -10,6 +10,7 @@ import { registerGetCompositionPatternTool } from './tools/get-composition-patte
 import { registerGetSchematicsUsageTool } from './tools/get-schematics-usage.tool.js';
 import { registerGetThemingGuideTool } from './tools/get-theming-guide.tool.js';
 import { registerListComponentsTool } from './tools/list-components.tool.js';
+import { registerSearchComponentsTool } from './tools/search-components.tool.js';
 
 interface OwnPackageJson {
   name?: string;
@@ -44,6 +45,7 @@ export function createServer(service: ExtractionService): McpServer {
   registerGetCompositionPatternTool(server);
   registerGetThemingGuideTool(server);
   registerGetSchematicsUsageTool(server);
+  registerSearchComponentsTool(server, service);
 
   return server;
 }
