@@ -41,6 +41,13 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Exception: the resolver test fixture needs a real node_modules/@angular/material layout
+# checked into git so module-resolver tests have something to find.
+!tests/fixtures/mock-project/node_modules/
+!tests/fixtures/mock-project/node_modules/@angular/
+!tests/fixtures/mock-project/node_modules/@angular/material/
+!tests/fixtures/mock-project/node_modules/@angular/material/**
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
@@ -146,3 +153,4 @@ vite.config.ts.timestamp-*
 README.md
 angular-material-mcp-architecture.md
 IMPLEMENTATION_PLAN.md
+CLAUDE.md
