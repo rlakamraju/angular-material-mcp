@@ -1,0 +1,31 @@
+{
+  "name": "ng-add",
+  "command": "ng add @angular/material",
+  "description": "Installs @angular/material, @angular/cdk, and @angular/animations, then runs a schematic that configures a theme, typography, and browser animations for the workspace.",
+  "options": [
+    {
+      "name": "theme",
+      "type": "string",
+      "description": "Prebuilt theme to install, or \"custom\" to generate a starter custom theme file instead.",
+      "default": "indigo-pink"
+    },
+    {
+      "name": "typography",
+      "type": "boolean",
+      "description": "Add the Roboto font and Material typography styles to the project.",
+      "default": "true"
+    },
+    {
+      "name": "animations",
+      "type": "string",
+      "description": "Whether to set up @angular/animations: \"enabled\", \"disabled\" (adds NoopAnimationsModule), or \"excluded\" (skips the animations package entirely).",
+      "default": "enabled"
+    }
+  ],
+  "generatedFiles": [
+    "angular.json (styles array updated with the chosen theme)",
+    "src/styles.scss or src/styles.css (theme import or mat.theme mixin added)",
+    "src/index.html (Roboto font and Material Icons links, if typography is enabled)"
+  ],
+  "example": "ng add @angular/material --theme=custom --typography=true --animations=enabled"
+}

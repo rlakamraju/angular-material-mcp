@@ -1,0 +1,14 @@
+{
+  "name": "table-sort-paginator",
+  "description": "Wires MatTable to MatSort and MatPaginator through a shared MatTableDataSource — the standard pattern for a sortable, paginated data table.",
+  "components": ["table", "sort", "paginator"],
+  "standaloneImports": ["MatTableModule", "MatSortModule", "MatPaginatorModule"],
+  "templateCode": "<table mat-table [dataSource]=\"dataSource\" matSort class=\"mat-elevation-z2\">\n  <ng-container matColumnDef=\"name\">\n    <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>\n    <td mat-cell *matCellDef=\"let row\">{{ row.name }}</td>\n  </ng-container>\n\n  <ng-container matColumnDef=\"value\">\n    <th mat-header-cell *matHeaderCellDef mat-sort-header>Value</th>\n    <td mat-cell *matCellDef=\"let row\">{{ row.value }}</td>\n  </ng-container>\n\n  <tr mat-header-row *matHeaderRowDef=\"displayedColumns\"></tr>\n  <tr mat-row *matRowDef=\"let row; columns: displayedColumns\"></tr>\n</table>\n\n<mat-paginator [pageSizeOptions]=\"[5, 10, 25]\" [pageSize]=\"10\" showFirstLastButtons></mat-paginator>\n",
+  "componentCode": "import { AfterViewInit, Component, ViewChild } from '@angular/core';\nimport { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';\nimport { MatSort, MatSortModule } from '@angular/material/sort';\nimport { MatTableDataSource, MatTableModule } from '@angular/material/table';\n\ninterface Row {\n  name: string;\n  value: number;\n}\n\n@Component({\n  selector: 'app-sortable-table',\n  standalone: true,\n  imports: [MatTableModule, MatSortModule, MatPaginatorModule],\n  templateUrl: './sortable-table.component.html',\n})\nexport class SortableTableComponent implements AfterViewInit {\n  displayedColumns = ['name', 'value'];\n  dataSource = new MatTableDataSource<Row>([]);\n\n  @ViewChild(MatSort) sort!: MatSort;\n  @ViewChild(MatPaginator) paginator!: MatPaginator;\n\n  ngAfterViewInit(): void {\n    this.dataSource.sort = this.sort;\n    this.dataSource.paginator = this.paginator;\n  }\n}\n",
+  "notes": [
+    "Assign dataSource.sort and dataSource.paginator inside ngAfterViewInit, not the constructor — the child directives aren't rendered yet at that point.",
+    "MatTableDataSource's built-in sort compares values by the matSortActive column name directly; override sortingDataAccessor for nested or computed properties.",
+    "Keep pageSize in sync with one of the pageSizeOptions values, or Angular can throw an ExpressionChangedAfterItHasBeenCheckedError in dev mode."
+  ],
+  "version": "17.3.0"
+}
