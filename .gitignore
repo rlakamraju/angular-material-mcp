@@ -141,3 +141,8 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Internal-only docs — not tracked/pushed (revisit README.md exclusion at Phase 16 packaging)
+README.md
+angular-material-mcp-architecture.md
+IMPLEMENTATION_PLAN.md
