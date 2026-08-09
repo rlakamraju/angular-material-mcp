@@ -16,9 +16,10 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && tsx scripts/copy-data.ts",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
+    "validate-data": "tsx scripts/validate-data.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

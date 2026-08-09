@@ -6,6 +6,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import type { ExtractionService } from './cache/extraction-service.js';
 import { registerGetComponentApiTool } from './tools/get-component-api.tool.js';
+import { registerGetCompositionPatternTool } from './tools/get-composition-pattern.tool.js';
+import { registerGetSchematicsUsageTool } from './tools/get-schematics-usage.tool.js';
+import { registerGetThemingGuideTool } from './tools/get-theming-guide.tool.js';
 import { registerListComponentsTool } from './tools/list-components.tool.js';
 
 interface OwnPackageJson {
@@ -38,6 +41,9 @@ export function createServer(service: ExtractionService): McpServer {
 
   registerListComponentsTool(server, service);
   registerGetComponentApiTool(server, service);
+  registerGetCompositionPatternTool(server);
+  registerGetThemingGuideTool(server);
+  registerGetSchematicsUsageTool(server);
 
   return server;
 }

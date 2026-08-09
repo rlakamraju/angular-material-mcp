@@ -1,0 +1,13 @@
+{
+  "topic": "initial-setup",
+  "version": "17.3.0",
+  "approach": "Use a prebuilt CSS theme for a quick start, or call the mat.theme Sass mixin for full control over color, typography, and density from a single include.",
+  "setupCode": "@use '@angular/material' as mat;\n\nhtml {\n  @include mat.theme((\n    color: mat.$violet-palette,\n    typography: Roboto,\n    density: 0,\n  ));\n}\n",
+  "explanation": "Angular Material 17+ ships a single Sass mixin, mat.theme, that generates both the color and typography CSS custom properties every Material component reads. Include it once, typically on html or body, after `@use '@angular/material' as mat;`. Prebuilt CSS themes (imported as a stylesheet in angular.json, e.g. @angular/material/prebuilt-themes/indigo-pink.css) remain available for projects that don't need a custom palette.",
+  "relatedTopics": ["custom-theme", "typography", "dark-mode", "css-custom-properties-reference"],
+  "gotchas": [
+    "mat.theme should be included exactly once per stylesheet scope — including it more than once duplicates every component's CSS custom properties.",
+    "A prebuilt theme stylesheet and mat.theme are mutually exclusive; using both at once produces conflicting custom property values.",
+    "Components that render outside the themed element's DOM subtree (e.g. into the cdk-overlay-container via a portal) still pick up the theme, because the custom properties live on html, not on a component's host element."
+  ]
+}

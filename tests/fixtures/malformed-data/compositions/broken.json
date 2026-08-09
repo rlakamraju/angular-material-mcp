@@ -1,0 +1,5 @@
+{
+  "name": "broken",
+  "description": "Missing required fields on purpose, to prove validate-data catches schema violations.",
+  "components": ["table"]
+}
