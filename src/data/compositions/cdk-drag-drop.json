@@ -1,0 +1,14 @@
+{
+  "name": "cdk-drag-drop",
+  "description": "Uses CdkDropList and CdkDrag to let the user reorder a list of items by dragging, moving the item to its new index in the underlying array on drop.",
+  "components": ["cdk/drag-drop"],
+  "standaloneImports": ["DragDropModule"],
+  "templateCode": "<div cdkDropList (cdkDropListDropped)=\"drop($event)\" class=\"task-list\">\n  <div class=\"task-box\" *ngFor=\"let task of tasks\" cdkDrag>{{ task }}</div>\n</div>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';\n\n@Component({\n  selector: 'app-reorderable-list',\n  standalone: true,\n  imports: [CommonModule, DragDropModule],\n  templateUrl: './reorderable-list.component.html',\n})\nexport class ReorderableListComponent {\n  tasks = ['Write report', 'Review PR', 'Deploy release'];\n\n  drop(event: CdkDragDrop<string[]>): void {\n    moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);\n  }\n}\n",
+  "notes": [
+    "moveItemInArray mutates the array in place and returns void — reassign the array reference afterward (e.g. `this.tasks = [...this.tasks]`) if a component further down the tree relies on OnPush change detection to notice the reorder.",
+    "cdkDropListDropped fires even when the item is dropped back at its original index — check `event.previousIndex !== event.currentIndex` before treating the drop as a real reorder if that distinction matters.",
+    "Moving items between two different lists (rather than reordering one) requires connecting them with `cdkDropListConnectedTo` and calling `transferArrayItem` instead of `moveItemInArray` in the drop handler."
+  ],
+  "version": "17.3.0"
+}

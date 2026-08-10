@@ -15,6 +15,12 @@ export interface ExtractDirectivesOptions {
   packageName: string;
   /** Version string read from the resolved package's `package.json`. */
   version: string;
+  /**
+   * Prepended as `<namePrefix>/<subpackage>` to the extracted `name`, disambiguating a second
+   * root (e.g. "cdk") whose subpackages could otherwise collide with @angular/material ones.
+   * Omitted for the primary @angular/material root, which keeps its bare subpackage name.
+   */
+  namePrefix?: string;
 }
 
 /**
@@ -41,7 +47,7 @@ export function extractDirectives(
       }
 
       directives.push({
-        name: entry.subpackage,
+        name: options.namePrefix ? `${options.namePrefix}/${entry.subpackage}` : entry.subpackage,
         className: classDecl.name.text,
         importPath: `${options.packageName}/${entry.subpackage}`,
         selector,

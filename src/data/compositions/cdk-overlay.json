@@ -1,0 +1,14 @@
+{
+  "name": "cdk-overlay",
+  "description": "Uses the CDK Overlay service to render a component into a floating, positioned layer above the page — the same primitive MatMenu/MatTooltip/MatSelect build on — closing it on backdrop click.",
+  "components": ["cdk/overlay"],
+  "standaloneImports": ["OverlayModule"],
+  "templateCode": "<button #trigger (click)=\"open(trigger)\">Open panel</button>\n",
+  "componentCode": "import { Component, ViewContainerRef } from '@angular/core';\nimport { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay';\nimport { ComponentPortal } from '@angular/cdk/portal';\nimport { InfoPanelComponent } from './info-panel.component';\n\n@Component({\n  selector: 'app-overlay-trigger',\n  standalone: true,\n  imports: [OverlayModule],\n  templateUrl: './overlay-trigger.component.html',\n})\nexport class OverlayTriggerComponent {\n  private overlayRef?: OverlayRef;\n\n  constructor(\n    private readonly overlay: Overlay,\n    private readonly viewContainerRef: ViewContainerRef,\n  ) {}\n\n  open(trigger: HTMLElement): void {\n    const positionStrategy = this.overlay\n      .position()\n      .flexibleConnectedTo(trigger)\n      .withPositions([{ originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' }]);\n\n    this.overlayRef = this.overlay.create({\n      positionStrategy,\n      hasBackdrop: true,\n      scrollStrategy: this.overlay.scrollStrategies.close(),\n    });\n    this.overlayRef.backdropClick().subscribe(() => this.overlayRef?.dispose());\n    this.overlayRef.attach(new ComponentPortal(InfoPanelComponent, this.viewContainerRef));\n  }\n}\n",
+  "notes": [
+    "OverlayRef.dispose() must be called explicitly (e.g. on backdropClick or ngOnDestroy) — an attached overlay is not removed automatically when its triggering component is destroyed, which leaks a detached DOM node and its component instance.",
+    "hasBackdrop: true is what makes backdropClick() emit at all; without it the overlay has no backdrop element and clicking outside the panel does nothing.",
+    "Passing the triggering component's own ViewContainerRef to ComponentPortal gives the projected component access to the same dependency injectors as the rest of the page, rather than an isolated one."
+  ],
+  "version": "17.3.0"
+}

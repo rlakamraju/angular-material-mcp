@@ -10,7 +10,7 @@ const FIXTURE_ROOT = path.resolve(
   '../../fixtures/mock-angular-material',
 );
 
-const RESOLVED = { packageRoot: FIXTURE_ROOT, version: '17.3.0' };
+const RESOLVED = { material: { packageRoot: FIXTURE_ROOT, version: '17.3.0' } };
 
 describe('get-component-api tool', () => {
   it('returns the full extracted metadata for a known component', () => {

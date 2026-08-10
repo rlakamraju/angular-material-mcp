@@ -3,7 +3,11 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 import { createExtractionService } from './cache/extraction-service.js';
-import { ModuleResolutionError, resolveAngularMaterial } from './extractors/module-resolver.js';
+import {
+  ModuleResolutionError,
+  resolveAngularCdk,
+  resolveAngularMaterial,
+} from './extractors/module-resolver.js';
 import type { ResolvedAngularMaterial } from './extractors/module-resolver.js';
 import { createServer } from './server.js';
 import { loadConfig } from './types/config.js';
@@ -31,7 +35,20 @@ async function main(): Promise<void> {
     `Resolved @angular/material ${resolved.version} at ${resolved.packageRoot} (via ${resolved.source})`,
   );
 
-  const service = createExtractionService(resolved);
+  // @angular/cdk is an optional second root (Phase 13) — its absence never fails startup, since
+  // plenty of Material projects never touch CDK primitives directly.
+  const resolvedCdk = resolveAngularCdk(config);
+  if (resolvedCdk) {
+    logger.info(
+      `Resolved @angular/cdk ${resolvedCdk.version} at ${resolvedCdk.packageRoot} (via ${resolvedCdk.source})`,
+    );
+  } else {
+    logger.info('@angular/cdk not found — cdk/* component lookups will be unavailable');
+  }
+
+  const service = createExtractionService(
+    resolvedCdk ? { material: resolved, cdk: resolvedCdk } : { material: resolved },
+  );
   const server = createServer(service);
   const transport = new StdioServerTransport();
 

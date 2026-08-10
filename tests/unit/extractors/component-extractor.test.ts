@@ -148,4 +148,15 @@ describe('component-extractor', () => {
 
     expect(components.some((component) => component.className === 'MatSort')).toBe(false);
   });
+
+  it('prefixes the extracted name with namePrefix when provided (e.g. for a second root like cdk)', () => {
+    const parsed = parsePackage(FIXTURE_ROOT);
+    const components = extractComponents(parsed, {
+      packageName: '@angular/material',
+      version: '17.3.0',
+      namePrefix: 'cdk',
+    });
+
+    expect(findByName(components, 'cdk/table').className).toBe('MatTable');
+  });
 });
