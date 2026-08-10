@@ -1,0 +1,13 @@
+{
+  "name": "grid-list",
+  "standaloneImports": ["MatGridListModule"],
+  "ngModule": "MatGridListModule",
+  "cssCustomProperties": [],
+  "composedWith": [],
+  "gotchas": [
+    "`cols` and `rowHeight` are both effectively required — omitting `rowHeight` doesn't fall back to content-driven sizing, it defaults to a 1:1 ratio, which surprises people expecting tiles to size themselves to their content.",
+    "A tile's position is decided by MatGridList's own fill-in layout algorithm based on template order, not independent x/y coordinates — reordering `mat-grid-tile` elements (or changing an earlier tile's `colspan`/`rowspan`) shifts which cells every later tile occupies.",
+    "`rowHeight=\"fit\"` divides the grid list's own element height by the row count, so the `mat-grid-list` needs an explicit height from a parent (e.g. a fixed-height container) — without one, `fit` collapses every tile to zero height."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { MatGridListModule } from '@angular/material/grid-list';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [CommonModule, MatGridListModule],\n  template: `\n    <mat-grid-list cols=\"2\" rowHeight=\"2:1\">\n      <mat-grid-tile *ngFor=\"let tile of tiles\">{{ tile }}</mat-grid-tile>\n    </mat-grid-list>\n  `,\n})\nexport class ExampleComponent {\n  tiles = ['One', 'Two', 'Three', 'Four'];\n}\n"
+}

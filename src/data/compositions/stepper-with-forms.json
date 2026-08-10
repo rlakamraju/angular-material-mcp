@@ -1,0 +1,20 @@
+{
+  "name": "stepper-with-forms",
+  "description": "Wires a linear MatStepper to a separate Reactive Forms FormGroup per step, gating each step's stepControl on its own validity — the standard pattern for a linear, validated multi-step wizard.",
+  "components": ["stepper", "form-field", "input"],
+  "standaloneImports": [
+    "MatStepperModule",
+    "MatFormFieldModule",
+    "MatInputModule",
+    "MatButtonModule",
+    "ReactiveFormsModule"
+  ],
+  "templateCode": "<mat-stepper linear #stepper>\n  <mat-step [stepControl]=\"accountForm\" label=\"Account\">\n    <form [formGroup]=\"accountForm\">\n      <mat-form-field appearance=\"outline\">\n        <mat-label>Email</mat-label>\n        <input matInput formControlName=\"email\" />\n        <mat-error *ngIf=\"accountForm.controls.email.hasError('required')\">Email is required</mat-error>\n      </mat-form-field>\n      <div>\n        <button mat-raised-button color=\"primary\" matStepperNext type=\"button\" [disabled]=\"accountForm.invalid\">\n          Next\n        </button>\n      </div>\n    </form>\n  </mat-step>\n\n  <mat-step [stepControl]=\"addressForm\" label=\"Address\">\n    <form [formGroup]=\"addressForm\">\n      <mat-form-field appearance=\"outline\">\n        <mat-label>City</mat-label>\n        <input matInput formControlName=\"city\" />\n        <mat-error *ngIf=\"addressForm.controls.city.hasError('required')\">City is required</mat-error>\n      </mat-form-field>\n      <div>\n        <button mat-button matStepperPrevious type=\"button\">Back</button>\n        <button mat-raised-button color=\"primary\" type=\"button\" (click)=\"submit()\" [disabled]=\"addressForm.invalid\">\n          Finish\n        </button>\n      </div>\n    </form>\n  </mat-step>\n</mat-stepper>\n",
+  "componentCode": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatStepperModule } from '@angular/material/stepper';\n\n@Component({\n  selector: 'app-signup-wizard',\n  standalone: true,\n  imports: [\n    CommonModule,\n    ReactiveFormsModule,\n    MatStepperModule,\n    MatFormFieldModule,\n    MatInputModule,\n    MatButtonModule,\n  ],\n  templateUrl: './signup-wizard.component.html',\n})\nexport class SignupWizardComponent {\n  private fb = inject(FormBuilder);\n\n  accountForm = this.fb.group({\n    email: ['', [Validators.required, Validators.email]],\n  });\n\n  addressForm = this.fb.group({\n    city: ['', Validators.required],\n  });\n\n  submit(): void {\n    if (this.accountForm.invalid || this.addressForm.invalid) {\n      this.accountForm.markAllAsTouched();\n      this.addressForm.markAllAsTouched();\n      return;\n    }\n    console.log({ ...this.accountForm.value, ...this.addressForm.value });\n  }\n}\n",
+  "notes": [
+    "linear mode gates advancement on each mat-step's own stepControl — bind stepControl to the exact FormGroup for that step, not a shared root form, or every step unlocks together as soon as any one control becomes valid.",
+    "matStepperNext/matStepperPrevious buttons need type=\"button\" — without it they submit the enclosing <form> and reload/navigate instead of just changing the active step.",
+    "Validate and markAllAsTouched() on each step's own form individually; only combine the per-step forms into one payload at the final Finish step, since merging everything into a single FormGroup up front defeats the point of per-step validation gating."
+  ],
+  "version": "17.3.0"
+}

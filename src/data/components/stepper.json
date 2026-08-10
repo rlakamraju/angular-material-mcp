@@ -1,0 +1,17 @@
+{
+  "name": "stepper",
+  "standaloneImports": ["MatStepperModule"],
+  "ngModule": "MatStepperModule",
+  "cssCustomProperties": [
+    "--mat-stepper-header-icon-background-color",
+    "--mat-stepper-header-selected-state-icon-background-color",
+    "--mat-stepper-container-color"
+  ],
+  "composedWith": ["form-field", "input", "button"],
+  "gotchas": [
+    "In `linear` mode a step only becomes reachable once the previous step's `stepControl` is `valid` (or `completed` is explicitly set to `true`) — a step with no `stepControl` bound is otherwise permanently treated as incomplete and blocks the stepper from advancing past it.",
+    "Buttons using `matStepperNext`/`matStepperPrevious` are native `<button>` elements and default to `type=\"submit\"` — inside a `<form>` that wraps the whole stepper this triggers full form submission on every step change unless you add `type=\"button\"`.",
+    "MatStepper only keeps the active step's content rendered in the DOM by default and destroys the others, so a `ViewChild` query into an inactive step's content returns `undefined` until that step becomes active."
+  ],
+  "minimalExample": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatStepperModule } from '@angular/material/stepper';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [\n    CommonModule,\n    ReactiveFormsModule,\n    MatStepperModule,\n    MatFormFieldModule,\n    MatInputModule,\n    MatButtonModule,\n  ],\n  template: `\n    <mat-stepper linear>\n      <mat-step [stepControl]=\"nameForm\" label=\"Name\">\n        <form [formGroup]=\"nameForm\">\n          <mat-form-field appearance=\"outline\">\n            <mat-label>Name</mat-label>\n            <input matInput formControlName=\"name\" />\n          </mat-form-field>\n          <button mat-button matStepperNext type=\"button\" [disabled]=\"nameForm.invalid\">Next</button>\n        </form>\n      </mat-step>\n      <mat-step label=\"Done\">\n        <p>All set.</p>\n        <button mat-button matStepperPrevious type=\"button\">Back</button>\n      </mat-step>\n    </mat-stepper>\n  `,\n})\nexport class ExampleComponent {\n  private fb = inject(FormBuilder);\n\n  nameForm = this.fb.group({\n    name: ['', Validators.required],\n  });\n}\n"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "slider",
+  "standaloneImports": ["MatSliderModule"],
+  "ngModule": "MatSliderModule",
+  "cssCustomProperties": ["--mat-slider-active-track-color", "--mat-slider-handle-color", "--mat-slider-inactive-track-color"],
+  "composedWith": ["form-field"],
+  "gotchas": [
+    "Since the Material Design Components rewrite, `mat-slider` no longer takes `value`/`(input)`/`(change)` directly — it's a container around a native `<input matSliderThumb>` (or two inputs with `matSliderStartThumb`/`matSliderEndThumb` for a range slider), and value binding/events live on that inner `<input>`, not on `mat-slider` itself.",
+    "`discrete` and `showTickMarks` only produce visible tick marks and a value-indicator tooltip when `step` is set to a non-continuous value — a `mat-slider` without an explicit `step` still renders as a smooth slider even with both inputs present.",
+    "A range slider's two thumbs (`matSliderStartThumb`/`matSliderEndThumb`) each bind independently and don't automatically keep `start <= end` — enforce that ordering yourself in a value-change handler if your app logic depends on it."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatSliderModule } from '@angular/material/slider';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [FormsModule, MatSliderModule],\n  template: `\n    <mat-slider min=\"0\" max=\"100\" step=\"10\" discrete>\n      <input matSliderThumb [(ngModel)]=\"volume\" />\n    </mat-slider>\n  `,\n})\nexport class ExampleComponent {\n  volume = 50;\n}\n"
+}
