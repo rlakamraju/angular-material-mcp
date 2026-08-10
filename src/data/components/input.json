@@ -1,0 +1,16 @@
+{
+  "name": "input",
+  "standaloneImports": ["MatInputModule"],
+  "ngModule": "MatInputModule",
+  "cssCustomProperties": [
+    "--mat-form-field-container-text-color",
+    "--mat-form-field-disabled-input-text-color"
+  ],
+  "composedWith": ["form-field"],
+  "gotchas": [
+    "matInput must be hosted on a native `<input>`/`<textarea>` inside a `<mat-form-field>` — it's a directive, not a component, so it contributes no markup of its own and relies entirely on the parent form field for layout.",
+    "Setting `type=\"number\"` still gives you a string in `(input)`/`ngModel` unless you also bind through Reactive Forms with a value transformer — matInput does not coerce numeric input values for you.",
+    "Auto-growing behavior for `<textarea matInput>` needs the separate `cdkTextareaAutosize` directive from `@angular/cdk/text-field` — matInput alone does not resize the textarea."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatFormFieldModule, MatInputModule, FormsModule],\n  template: `\n    <mat-form-field>\n      <mat-label>Email</mat-label>\n      <input matInput type=\"email\" [(ngModel)]=\"email\" />\n    </mat-form-field>\n  `,\n})\nexport class ExampleComponent {\n  email = '';\n}\n"
+}

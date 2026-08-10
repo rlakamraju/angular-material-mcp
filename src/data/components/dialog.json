@@ -1,0 +1,16 @@
+{
+  "name": "dialog",
+  "standaloneImports": ["MatDialogModule"],
+  "ngModule": "MatDialogModule",
+  "cssCustomProperties": [
+    "--mat-dialog-container-color",
+    "--mat-dialog-container-elevation-shadow"
+  ],
+  "composedWith": ["button", "form-field"],
+  "gotchas": [
+    "`MatDialog.open()` returns immediately with a `MatDialogRef` — the dialog component itself is instantiated asynchronously, so code that needs to run after the dialog closes belongs in `afterClosed()`, not directly after the `open()` call.",
+    "Data passed via `open(Component, { data })` is only available inside the dialog component through `inject(MAT_DIALOG_DATA)` — it is not a component `@Input()`.",
+    "Closing the dialog by any means other than `MatDialogRef.close(result)` (clicking the backdrop, pressing Escape) resolves `afterClosed()` with `undefined` — callers must handle the no-result case."
+  ],
+  "minimalExample": "import { Component, inject } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';\n\n@Component({\n  selector: 'app-confirm-dialog',\n  standalone: true,\n  imports: [MatDialogModule, MatButtonModule],\n  template: `\n    <h2 mat-dialog-title>Confirm</h2>\n    <mat-dialog-content>{{ data.message }}</mat-dialog-content>\n    <mat-dialog-actions>\n      <button mat-button (click)=\"dialogRef.close(false)\">Cancel</button>\n      <button mat-button (click)=\"dialogRef.close(true)\">OK</button>\n    </mat-dialog-actions>\n  `,\n})\nexport class ConfirmDialogComponent {\n  dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);\n  data = inject<{ message: string }>(MAT_DIALOG_DATA);\n}\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule],\n  template: `<button mat-button (click)=\"openDialog()\">Open</button>`,\n})\nexport class ExampleComponent {\n  private dialog = inject(MatDialog);\n\n  openDialog(): void {\n    const ref = this.dialog.open(ConfirmDialogComponent, { data: { message: 'Are you sure?' } });\n    ref.afterClosed().subscribe((confirmed) => console.log(confirmed));\n  }\n}\n"
+}

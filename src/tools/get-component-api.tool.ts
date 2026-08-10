@@ -2,6 +2,9 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import type { ExtractionService } from '../cache/extraction-service.js';
+import { readCuratedData } from '../data/data-loader.js';
+import { componentOverlaySchema } from '../data/schemas.js';
+import type { ComponentOverlay } from '../types/component-metadata.js';
 import type { GetComponentApiResponse, ToolErrorResponse } from '../types/tool-responses.js';
 import { toCallToolResult } from '../utils/mcp-response.js';
 
@@ -12,6 +15,32 @@ export const getComponentApiInputShape = {
     .optional()
     .describe('Import style to prefer in generated examples. Defaults to the server config.'),
 };
+
+/**
+ * Overlays curated `src/data/components/<name>.json` content onto extraction's hardcoded-empty
+ * fields (`standaloneImports`, `ngModule`, `cssCustomProperties`, `composedWith`, `gotchas`,
+ * `minimalExample`). Absent curated data is not an error — the component is still returned with
+ * those fields empty, exactly as extraction produced them.
+ */
+function withCuratedOverlay(component: GetComponentApiResponse): GetComponentApiResponse {
+  const overlay = readCuratedData<ComponentOverlay>(
+    'components',
+    component.name,
+    componentOverlaySchema,
+  );
+  if (!overlay) {
+    return component;
+  }
+  return {
+    ...component,
+    standaloneImports: overlay.standaloneImports,
+    ngModule: overlay.ngModule,
+    cssCustomProperties: overlay.cssCustomProperties,
+    composedWith: overlay.composedWith,
+    gotchas: overlay.gotchas,
+    minimalExample: overlay.minimalExample,
+  };
+}
 
 /**
  * Pure lookup by exact component name. Returns a `ToolErrorResponse` rather than throwing when
@@ -28,7 +57,7 @@ export function getComponentApi(
       message: `No component named "${input.componentName}" was found. Use list_components or search_components to find valid names.`,
     };
   }
-  return component;
+  return withCuratedOverlay(component);
 }
 
 export function registerGetComponentApiTool(

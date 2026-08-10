@@ -54,6 +54,28 @@ not a silently-ignored typo.
 
 Each `SchematicOption` is `{ name, type, description, default? }`.
 
+### `src/data/components/*.json` — `ComponentOverlay`
+
+Unlike the other three categories, this one is looked up by `get_component_api` automatically —
+there's no dedicated tool input for it. The filename (minus `.json`) must match the component
+name as extracted from `.d.ts` (e.g. `table.json` for `get_component_api({ componentName: "table" })`).
+It overlays curated content onto exactly the fields extraction can never derive from a `.d.ts`
+file alone, which are otherwise returned empty (`[]`/`''`):
+
+| field                 | type       | notes                                                                                 |
+| --------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| `name`                | `string`   | Must match the filename.                                                              |
+| `standaloneImports`   | `string[]` | Symbols to add to a standalone component's `imports` array.                           |
+| `ngModule`            | `string`   | Legacy NgModule name, e.g. `MatTableModule`.                                          |
+| `cssCustomProperties` | `string[]` | Documented `--mat-*` custom properties for styling this component.                    |
+| `composedWith`        | `string[]` | Other component names (as used by `get_component_api`) commonly paired with this one. |
+| `gotchas`             | `string[]` | Common mistakes and tips.                                                             |
+| `minimalExample`      | `string`   | Complete, working standalone component TypeScript (inline template).                  |
+
+A missing overlay file is not an error — `get_component_api` simply returns the extracted
+metadata with those fields empty, exactly as it did before curated content existed for that
+component.
+
 ### Adding or editing a data file
 
 1. Add or edit the `.json` file under the right category directory.

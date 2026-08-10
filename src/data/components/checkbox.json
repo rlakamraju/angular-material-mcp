@@ -1,0 +1,17 @@
+{
+  "name": "checkbox",
+  "standaloneImports": ["MatCheckboxModule"],
+  "ngModule": "MatCheckboxModule",
+  "cssCustomProperties": [
+    "--mat-checkbox-selected-checkmark-color",
+    "--mat-checkbox-selected-icon-color",
+    "--mat-checkbox-disabled-selected-icon-color"
+  ],
+  "composedWith": [],
+  "gotchas": [
+    "`indeterminate` is a purely visual state — a user click always resolves the box to `checked = true`, it never becomes a genuine third bound value. Clear `indeterminate` yourself in the `(change)` handler if you're using it for a tri-state parent checkbox.",
+    "Reactive-forms-bound checkboxes should bind `formControlName`/`[formControl]` rather than combining `[checked]` and `(change)` on the same element — mixing both patterns makes the control's value and the DOM checkbox state fight each other.",
+    "On an `OnPush` component, toggling a plain (non-form) boolean bound to `[checked]` from outside a DOM event (e.g. a timer or subscription) needs an explicit change-detection trigger, or the checkbox visually never updates."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatCheckboxModule } from '@angular/material/checkbox';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatCheckboxModule, FormsModule],\n  template: `<mat-checkbox [(ngModel)]=\"agreed\">I agree</mat-checkbox>`,\n})\nexport class ExampleComponent {\n  agreed = false;\n}\n"
+}

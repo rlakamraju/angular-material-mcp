@@ -1,0 +1,13 @@
+{
+  "name": "sort",
+  "standaloneImports": ["MatSortModule"],
+  "ngModule": "MatSortModule",
+  "cssCustomProperties": ["--mat-sort-header-arrow-color"],
+  "composedWith": ["table"],
+  "gotchas": [
+    "matSort must be placed on the same element as mat-table, with the data source's `.sort` set to a `@ViewChild(MatSort)` reference — placing it on an unrelated ancestor has no effect.",
+    "MatTableDataSource's default sort comparator does a plain value comparison; for computed or nested properties, set `dataSource.sortingDataAccessor` rather than trying to configure the comparator on MatSort itself.",
+    "Setting `[matSortActive]`/`[matSortDirection]` initializes the header UI but does not itself emit `(matSortChange)` — read `dataSource.sort` after assignment if you need the sorted data immediately."
+  ],
+  "minimalExample": "import { AfterViewInit, Component, ViewChild } from '@angular/core';\nimport { MatSort, MatSortModule } from '@angular/material/sort';\nimport { MatTableDataSource, MatTableModule } from '@angular/material/table';\n\ninterface Row {\n  name: string;\n  value: number;\n}\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatTableModule, MatSortModule],\n  template: `\n    <table mat-table [dataSource]=\"dataSource\" matSort>\n      <ng-container matColumnDef=\"name\">\n        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>\n        <td mat-cell *matCellDef=\"let row\">{{ row.name }}</td>\n      </ng-container>\n      <tr mat-header-row *matHeaderRowDef=\"['name']\"></tr>\n      <tr mat-row *matRowDef=\"let row; columns: ['name']\"></tr>\n    </table>\n  `,\n})\nexport class ExampleComponent implements AfterViewInit {\n  dataSource = new MatTableDataSource<Row>([\n    { name: 'Beta', value: 2 },\n    { name: 'Alpha', value: 1 },\n  ]);\n\n  @ViewChild(MatSort) sort!: MatSort;\n\n  ngAfterViewInit(): void {\n    this.dataSource.sort = this.sort;\n  }\n}\n"
+}

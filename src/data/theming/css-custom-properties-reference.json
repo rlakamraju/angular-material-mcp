@@ -1,0 +1,13 @@
+{
+  "topic": "css-custom-properties-reference",
+  "version": "17.3.0",
+  "approach": "Treat every Material component's look as fully overridable via its documented --mat-<component>-* custom properties, scoped as narrowly as the change requires, rather than overriding compiled component CSS classes directly.",
+  "setupCode": "/* Global override, applies everywhere mat-button is used */\nhtml {\n  --mat-filled-button-container-color: #1b5e20;\n}\n\n/* Narrow override, only inside one feature area */\n.danger-zone {\n  --mat-filled-button-container-color: #b3261e;\n}\n",
+  "explanation": "Every Material 3 component exposes its themeable surfaces as CSS custom properties following the --mat-<component>-<variant>-<property> naming convention, documented per-component in the Angular Material API reference. Because components read these properties at render time rather than baking colors into compiled CSS, overriding them is just standard CSS custom property scoping — set the property on any ancestor element and every matching descendant component picks it up, with no need to fight specificity against Material's own stylesheets or reach for deep-selector workarounds.",
+  "relatedTopics": ["initial-setup", "custom-theme", "dark-mode", "typography"],
+  "gotchas": [
+    "Custom property names are not guaranteed stable across major Angular Material versions — check the changelog/API reference for the specific installed version rather than assuming a token name from an older guide still applies.",
+    "Overriding a custom property on a component's own host element only affects that instance; overriding it higher up the DOM (e.g. on a layout container or html) affects every instance beneath it, which is usually what's intended for a design-system-wide change.",
+    "Some custom properties are derived from others internally (e.g. state-layer opacity variants derived from a base color) — overriding only the base token is usually correct, but overriding a derived token directly can leave it out of sync if the base token changes later."
+  ]
+}

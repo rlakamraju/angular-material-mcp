@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { z } from 'zod';
 
 import {
+  componentOverlaySchema,
   compositionPatternSchema,
   schematicInfoSchema,
   themingGuideSchema,
@@ -14,6 +15,7 @@ const SCHEMAS_BY_CATEGORY: Record<string, z.ZodTypeAny> = {
   compositions: compositionPatternSchema,
   theming: themingGuideSchema,
   schematics: schematicInfoSchema,
+  components: componentOverlaySchema,
 };
 
 export interface ValidationFailure {

@@ -1,0 +1,16 @@
+{
+  "name": "toolbar",
+  "standaloneImports": ["MatToolbarModule"],
+  "ngModule": "MatToolbarModule",
+  "cssCustomProperties": [
+    "--mat-toolbar-container-background-color",
+    "--mat-toolbar-container-text-color"
+  ],
+  "composedWith": ["sidenav", "button"],
+  "gotchas": [
+    "mat-toolbar is a layout/styling wrapper only — the toggle behavior in a typical app shell comes from a button inside the toolbar calling `MatSidenav.toggle()`, not from the toolbar itself.",
+    "Multiple `mat-toolbar-row` children inside one `mat-toolbar` stack vertically and each still spans the toolbar's fixed row height — content that needs to wrap onto multiple lines needs a taller custom row, not additional `mat-toolbar-row`s.",
+    "A toolbar fixed to the top of the viewport (via your own `position: fixed` styling — MatToolbar doesn't do this for you) needs the page content below it manually offset by the toolbar's height, or content renders underneath it."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatToolbarModule } from '@angular/material/toolbar';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatToolbarModule, MatButtonModule, MatIconModule],\n  template: `\n    <mat-toolbar color=\"primary\">\n      <button mat-icon-button aria-label=\"Menu\"><mat-icon>menu</mat-icon></button>\n      <span>My App</span>\n    </mat-toolbar>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

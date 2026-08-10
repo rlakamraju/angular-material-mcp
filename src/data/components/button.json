@@ -1,0 +1,18 @@
+{
+  "name": "button",
+  "standaloneImports": ["MatButtonModule"],
+  "ngModule": "MatButtonModule",
+  "cssCustomProperties": [
+    "--mat-filled-button-container-color",
+    "--mat-filled-button-label-text-color",
+    "--mat-outlined-button-outline-color",
+    "--mat-icon-button-state-layer-color"
+  ],
+  "composedWith": ["menu", "tooltip"],
+  "gotchas": [
+    "The visual variant comes entirely from the host attribute (`mat-button`, `mat-raised-button`, `mat-flat-button`, `mat-stroked-button`, `mat-icon-button`, `mat-fab`, `mat-mini-fab`) — MatButton has no `variant` input, so switching styles means swapping the attribute, not binding a property.",
+    "`color=\"primary\"|\"accent\"|\"warn\"` only has a clearly visible effect on `mat-raised-button`, `mat-flat-button`, the fab variants, and `mat-icon-button` — a plain `mat-button` renders the color as text color only, which is easy to mistake for a bug.",
+    "`<a mat-button>` needs `disabled` handled manually (e.g. remove `href` or set `[attr.aria-disabled]`) — anchors don't support the native `disabled` attribute the way `<button>` does."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule],\n  template: `<button mat-raised-button color=\"primary\" (click)=\"onClick()\">Save</button>`,\n})\nexport class ExampleComponent {\n  onClick(): void {\n    console.log('clicked');\n  }\n}\n"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "dialog-with-form",
+  "description": "Opens a MatDialog containing a Reactive Forms form, passing initial data in via MAT_DIALOG_DATA and returning the edited result through MatDialogRef.close().",
+  "components": ["dialog", "form-field", "input"],
+  "standaloneImports": [
+    "MatDialogModule",
+    "MatFormFieldModule",
+    "MatInputModule",
+    "MatButtonModule",
+    "ReactiveFormsModule"
+  ],
+  "templateCode": "<h2 mat-dialog-title>Edit item</h2>\n\n<form [formGroup]=\"form\" (ngSubmit)=\"save()\">\n  <mat-dialog-content>\n    <mat-form-field appearance=\"outline\">\n      <mat-label>Name</mat-label>\n      <input matInput formControlName=\"name\" />\n    </mat-form-field>\n  </mat-dialog-content>\n\n  <mat-dialog-actions align=\"end\">\n    <button mat-button type=\"button\" (click)=\"dialogRef.close()\">Cancel</button>\n    <button mat-raised-button color=\"primary\" type=\"submit\" [disabled]=\"form.invalid\">Save</button>\n  </mat-dialog-actions>\n</form>\n",
+  "componentCode": "import { Component, inject } from '@angular/core';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { MatButtonModule } from '@angular/material/button';\nimport {\n  MAT_DIALOG_DATA,\n  MatDialog,\n  MatDialogModule,\n  MatDialogRef,\n} from '@angular/material/dialog';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\n\ninterface EditItemData {\n  name: string;\n}\n\n@Component({\n  selector: 'app-edit-item-dialog',\n  standalone: true,\n  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, ReactiveFormsModule],\n  templateUrl: './edit-item-dialog.component.html',\n})\nexport class EditItemDialogComponent {\n  dialogRef = inject(MatDialogRef<EditItemDialogComponent, EditItemData>);\n  private data = inject<EditItemData>(MAT_DIALOG_DATA);\n  private fb = inject(FormBuilder);\n\n  form = this.fb.group({\n    name: [this.data.name, Validators.required],\n  });\n\n  save(): void {\n    if (this.form.invalid) {\n      this.form.markAllAsTouched();\n      return;\n    }\n    this.dialogRef.close({ name: this.form.value.name! });\n  }\n}\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule],\n  template: `<button mat-button (click)=\"openEditDialog()\">Edit</button>`,\n})\nexport class ExampleComponent {\n  private dialog = inject(MatDialog);\n\n  openEditDialog(): void {\n    const ref = this.dialog.open(EditItemDialogComponent, { data: { name: 'Widget' } });\n    ref.afterClosed().subscribe((result: EditItemData | undefined) => {\n      if (result) {\n        console.log('saved', result);\n      }\n    });\n  }\n}\n",
+  "notes": [
+    "The [disabled] binding on the submit button reflects the FormGroup created inside the dialog component, not the parent — validation state doesn't automatically propagate back to the component that called open().",
+    "Data passed through the dialog's close(result) must be plain data, not the FormGroup/FormControl instances themselves, since afterClosed() consumers shouldn't need @angular/forms to read the result.",
+    "Type MatDialogRef<T, R> with the result type R so afterClosed() gives you a typed Observable instead of unknown."
+  ],
+  "version": "17.3.0"
+}

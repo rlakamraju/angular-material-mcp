@@ -1,0 +1,13 @@
+{
+  "topic": "dark-mode",
+  "version": "17.3.0",
+  "approach": "Generate both a light and dark color scheme from the same palette using mat.theme's color.theme-type option, and switch between them by toggling a class (or relying on prefers-color-scheme) on a root element rather than re-theming components individually.",
+  "setupCode": "@use '@angular/material' as mat;\n\n:root {\n  @include mat.theme((\n    color: (\n      primary: mat.$violet-palette,\n      theme-type: light,\n    ),\n    typography: Roboto,\n    density: 0,\n  ));\n}\n\n.dark-theme {\n  @include mat.theme((\n    color: (\n      primary: mat.$violet-palette,\n      theme-type: dark,\n    ),\n    typography: Roboto,\n    density: 0,\n  ));\n}\n",
+  "explanation": "mat.theme's color.theme-type option ('light', 'dark', or the default 'auto') controls which half of the derived M3 tonal palette is mapped onto the emitted --mat-sys-* custom properties. Scoping a second mat.theme include with theme-type: dark under a toggleable class lets every Material component pick up dark-mode colors automatically wherever that class applies, since components read the custom properties rather than hardcoding colors. theme-type: auto instead emits both light and dark values wrapped in a prefers-color-scheme media query directly, requiring no class toggle at all if following the OS setting exclusively is acceptable.",
+  "relatedTopics": ["initial-setup", "custom-theme", "css-custom-properties-reference"],
+  "gotchas": [
+    "Only one mat.theme scope should actually apply to a given element at a time — nesting both the light and dark mat.theme includes under selectors that can both match the same element (e.g. :root and html) applies both, and the later one in source order wins unpredictably.",
+    "theme-type: auto ties dark mode strictly to the OS-level prefers-color-scheme setting — a product that needs a manual, user-facing dark-mode toggle independent of the OS setting should use explicit light/dark theme-type values under a class instead.",
+    "Components that render into the CDK overlay container (dialogs, menus, autocomplete panels) are appended outside the component tree near the end of the document body — a class-based dark-mode toggle must be applied high enough (e.g. on html or body) to also cover the overlay container, or overlay-rendered content won't pick up the dark palette."
+  ]
+}

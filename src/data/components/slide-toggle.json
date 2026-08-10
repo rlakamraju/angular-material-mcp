@@ -1,0 +1,16 @@
+{
+  "name": "slide-toggle",
+  "standaloneImports": ["MatSlideToggleModule"],
+  "ngModule": "MatSlideToggleModule",
+  "cssCustomProperties": [
+    "--mat-slide-toggle-selected-track-color",
+    "--mat-slide-toggle-selected-handle-color"
+  ],
+  "composedWith": [],
+  "gotchas": [
+    "As of Angular Material 15+, `mat-slide-toggle` no longer wraps a native `<input type=\"checkbox\">` inside the same host the way older versions did — form directives (`formControlName`, `[(ngModel)]`) still work, but code that queried for a nested `<input>` (e.g. in tests) needs updating.",
+    "`(change)` fires only for direct user toggling, not for programmatic changes to the bound value — don't rely on it to react to code-driven state changes the way you would with a plain event listener.",
+    "`required` on a standalone (non-form) slide toggle has no built-in validation effect — it only participates in Angular Forms validation when used with `formControlName`/`[(ngModel)]` inside a `<form>`."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatSlideToggleModule } from '@angular/material/slide-toggle';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatSlideToggleModule, FormsModule],\n  template: `<mat-slide-toggle [(ngModel)]=\"enabled\">Enable notifications</mat-slide-toggle>`,\n})\nexport class ExampleComponent {\n  enabled = false;\n}\n"
+}

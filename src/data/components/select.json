@@ -1,0 +1,17 @@
+{
+  "name": "select",
+  "standaloneImports": ["MatSelectModule"],
+  "ngModule": "MatSelectModule",
+  "cssCustomProperties": [
+    "--mat-select-panel-background-color",
+    "--mat-select-enabled-trigger-text-color",
+    "--mat-select-disabled-trigger-text-color"
+  ],
+  "composedWith": ["form-field"],
+  "gotchas": [
+    "mat-select is designed to live inside a `<mat-form-field>` — it renders its trigger/label/underline through the form field's styling and layout, it isn't a standalone control the way a native `<select>` is.",
+    "Binding `[compareWith]` is required when option values are objects rather than primitives, or the selected option stops highlighting correctly once the bound value is reassigned to a new object with the same shape.",
+    "`multiple` changes the bound value's type from a single value to an array — toggling the `multiple` input after the value is already bound to a scalar throws at runtime rather than coercing."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatSelectModule } from '@angular/material/select';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatFormFieldModule, MatSelectModule, FormsModule],\n  template: `\n    <mat-form-field>\n      <mat-label>Size</mat-label>\n      <mat-select [(ngModel)]=\"size\">\n        <mat-option value=\"small\">Small</mat-option>\n        <mat-option value=\"large\">Large</mat-option>\n      </mat-select>\n    </mat-form-field>\n  `,\n})\nexport class ExampleComponent {\n  size = 'small';\n}\n"
+}

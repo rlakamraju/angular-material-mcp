@@ -1,0 +1,17 @@
+{
+  "name": "radio",
+  "standaloneImports": ["MatRadioModule"],
+  "ngModule": "MatRadioModule",
+  "cssCustomProperties": [
+    "--mat-radio-selected-icon-color",
+    "--mat-radio-disabled-selected-icon-color",
+    "--mat-radio-ripple-color"
+  ],
+  "composedWith": [],
+  "gotchas": [
+    "Radio buttons only behave as a mutually-exclusive group when wrapped in a `<mat-radio-group>` bound to a single `[(ngModel)]`/`formControlName` — MatRadioButton has no built-in grouping by DOM proximity or shared `name` alone.",
+    "`mat-radio-group` binds `value`, not `checked`, on each `mat-radio-button` — also setting `[checked]` on individual buttons while binding the group's value produces two conflicting sources of truth.",
+    "Changing `mat-radio-group`'s bound value programmatically does not emit `(change)` — that event only fires from direct user interaction, so don't rely on it to react to code-driven selection changes."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatRadioModule } from '@angular/material/radio';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatRadioModule, FormsModule],\n  template: `\n    <mat-radio-group [(ngModel)]=\"selected\">\n      <mat-radio-button value=\"small\">Small</mat-radio-button>\n      <mat-radio-button value=\"large\">Large</mat-radio-button>\n    </mat-radio-group>\n  `,\n})\nexport class ExampleComponent {\n  selected = 'small';\n}\n"
+}

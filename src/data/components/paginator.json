@@ -1,0 +1,17 @@
+{
+  "name": "paginator",
+  "standaloneImports": ["MatPaginatorModule"],
+  "ngModule": "MatPaginatorModule",
+  "cssCustomProperties": [
+    "--mat-paginator-container-background-color",
+    "--mat-paginator-container-text-color",
+    "--mat-paginator-select-trigger-text-size"
+  ],
+  "composedWith": ["table"],
+  "gotchas": [
+    "MatPaginator only emits `(page)` events — it does not slice your data itself; wire it through `MatTableDataSource.paginator` instead of reimplementing slicing by hand.",
+    "`pageSize` must be one of the values in `pageSizeOptions` (or `hidePageSize` must be true), or Angular's dev-mode change detection can throw `ExpressionChangedAfterItHasBeenCheckedError`.",
+    "`length` must track the *unpaginated* total record count, not the current page's row count, or the last-page button computes the wrong page index."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatPaginatorModule, PageEvent } from '@angular/material/paginator';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatPaginatorModule],\n  template: `\n    <mat-paginator\n      [length]=\"100\"\n      [pageSize]=\"10\"\n      [pageSizeOptions]=\"[5, 10, 25]\"\n      (page)=\"onPage($event)\"\n    ></mat-paginator>\n  `,\n})\nexport class ExampleComponent {\n  onPage(event: PageEvent): void {\n    console.log(event.pageIndex, event.pageSize);\n  }\n}\n"
+}

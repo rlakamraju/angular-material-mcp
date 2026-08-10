@@ -1,0 +1,13 @@
+{
+  "topic": "custom-theme",
+  "version": "17.3.0",
+  "approach": "Extend the mat.theme mixin with custom primary/tertiary palettes instead of relying on a single prebuilt palette, and override individual --mat-sys-* tokens afterward only for isolated one-off deviations.",
+  "setupCode": "@use '@angular/material' as mat;\n\n$my-primary: mat.$violet-palette;\n$my-tertiary: mat.$blue-palette;\n\nhtml {\n  @include mat.theme((\n    color: (\n      primary: $my-primary,\n      tertiary: $my-tertiary,\n    ),\n    typography: Roboto,\n    density: 0,\n  ));\n}\n\n// Override an individual system token for a one-off deviation.\nhtml {\n  --mat-sys-primary: #6750a4;\n}\n",
+  "explanation": "mat.theme's color option accepts either one of Angular Material's built-in M3 palettes (mat.$violet-palette, mat.$blue-palette, etc.) or a custom palette map generated from a brand seed color, typically via the Material theme builder. Passing separate primary/tertiary palettes lets the generated M3 color scheme diverge from a single-hue default while Angular Material still derives a full, accessible tonal palette (light/dark variants, on-* contrast colors) automatically. Individual --mat-sys-* custom properties emitted by mat.theme can also be overridden afterward for isolated deviations, without hand-maintaining an entire palette.",
+  "relatedTopics": ["initial-setup", "typography", "dark-mode", "css-custom-properties-reference"],
+  "gotchas": [
+    "A hand-picked primary color doesn't guarantee accessible contrast on its own — the M3 tonal palette Angular Material derives from it is what supplies contrast-safe on-primary/on-surface colors; overriding a single --mat-sys-* token breaks that derived relationship for anything depending on the paired token.",
+    "Generate custom palettes from a single seed color with Angular Material's theme builder rather than hand-writing every tonal step — the M3 palette's internal tone scale is easy to get subtly wrong by hand.",
+    "Re-declaring mat.theme in more than one stylesheet scope (e.g. once on html and again on a component's :host) duplicates every custom property in both scopes and can make the second declaration win unexpectedly depending on specificity and load order."
+  ]
+}

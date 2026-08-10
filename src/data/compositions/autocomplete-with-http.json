@@ -1,0 +1,20 @@
+{
+  "name": "autocomplete-with-http",
+  "description": "Debounces user input through a MatAutocomplete-backed input, calling an HTTP endpoint per query with switchMap so stale responses can't overwrite newer ones.",
+  "components": ["autocomplete", "form-field", "input"],
+  "standaloneImports": [
+    "MatAutocompleteModule",
+    "MatFormFieldModule",
+    "MatInputModule",
+    "ReactiveFormsModule",
+    "HttpClientModule"
+  ],
+  "templateCode": "<mat-form-field appearance=\"outline\">\n  <mat-label>Search users</mat-label>\n  <input matInput [formControl]=\"searchControl\" [matAutocomplete]=\"auto\" />\n  <mat-autocomplete #auto=\"matAutocomplete\" [displayWith]=\"displayUser\">\n    <mat-option *ngFor=\"let user of users$ | async\" [value]=\"user\">\n      {{ user.name }}\n    </mat-option>\n  </mat-autocomplete>\n</mat-form-field>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { HttpClient, HttpClientModule } from '@angular/common/http';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\nimport { Observable, of } from 'rxjs';\nimport { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';\n\ninterface User {\n  id: number;\n  name: string;\n}\n\n@Component({\n  selector: 'app-user-search',\n  standalone: true,\n  imports: [\n    CommonModule,\n    ReactiveFormsModule,\n    HttpClientModule,\n    MatAutocompleteModule,\n    MatFormFieldModule,\n    MatInputModule,\n  ],\n  templateUrl: './user-search.component.html',\n})\nexport class UserSearchComponent {\n  searchControl = new FormControl('');\n\n  users$: Observable<User[]> = this.searchControl.valueChanges.pipe(\n    debounceTime(300),\n    distinctUntilChanged(),\n    switchMap((query) => this.searchUsers(typeof query === 'string' ? query : '')),\n  );\n\n  constructor(private http: HttpClient) {}\n\n  displayUser(user: User | string | null): string {\n    return user && typeof user !== 'string' ? user.name : (user ?? '');\n  }\n\n  private searchUsers(query: string): Observable<User[]> {\n    if (!query.trim()) {\n      return of([]);\n    }\n    return this.http\n      .get<User[]>('/api/users', { params: { q: query } })\n      .pipe(catchError(() => of([])));\n  }\n}\n",
+  "notes": [
+    "debounceTime + distinctUntilChanged + switchMap is the standard combination for autocomplete-over-HTTP: switchMap cancels the previous in-flight request automatically when a new keystroke arrives, so stale responses can't overwrite a newer, correct result.",
+    "displayWith must handle the value being either a User object (after selection) or the raw typed string (before selection) — MatAutocomplete calls it for both states.",
+    "catchError belongs inside the inner HTTP pipe, not around the whole valueChanges$ chain — an uncaught error from one request would otherwise terminate the Observable and silently stop all future searches."
+  ],
+  "version": "17.3.0"
+}
