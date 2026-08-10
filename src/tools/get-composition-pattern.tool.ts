@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { readCuratedData } from '../data/data-loader.js';
 import { compositionPatternSchema } from '../data/schemas.js';
 import type { GetCompositionPatternResponse, ToolErrorResponse } from '../types/tool-responses.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const getCompositionPatternInputShape = {
   patternName: z.string().min(1).describe('Composition pattern key, e.g. "table-sort-paginator".'),
@@ -41,6 +41,6 @@ export function registerGetCompositionPatternTool(server: McpServer): void {
         'ready-to-use template and component code.',
       inputSchema: getCompositionPatternInputShape,
     },
-    (input) => toCallToolResult(getCompositionPattern(input)),
+    (input) => safeToolResult(() => getCompositionPattern(input)),
   );
 }

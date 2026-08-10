@@ -1,8 +1,11 @@
 import type { Dirent } from 'node:fs';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 import * as ts from 'typescript';
+
+import type { Deadline } from '../utils/deadline.js';
+import { MAX_ENTRY_FILES, MAX_ENTRY_FILE_SIZE_BYTES, ResourceLimitError } from '../utils/resource-limits.js';
 
 /**
  * Compiler options for parsing a Material/CDK package's shipped `.d.ts` files directly, with no
@@ -41,8 +44,13 @@ export interface ParsedPackage {
  * Finds every immediate subdirectory of `packageRoot` that ships an `index.d.ts` entry point —
  * this is how `@angular/material`/`@angular/cdk` lay out their subpackages (`table/index.d.ts`,
  * `paginator/index.d.ts`, ...). Returned in sorted order for deterministic output.
+ *
+ * Enforces `MAX_ENTRY_FILES`/`MAX_ENTRY_FILE_SIZE_BYTES` (throwing `ResourceLimitError`) so a
+ * pathological package root can't hand `ts.createProgram` an unbounded amount of work, and checks
+ * `deadline` on every iteration so a huge subdirectory count fails within budget instead of
+ * running the full scan before anyone notices it's degenerate.
  */
-export function discoverEntryFiles(packageRoot: string): PackageEntryFile[] {
+export function discoverEntryFiles(packageRoot: string, deadline?: Deadline): PackageEntryFile[] {
   const entries: PackageEntryFile[] = [];
 
   let dirents: Dirent[];
@@ -53,13 +61,29 @@ export function discoverEntryFiles(packageRoot: string): PackageEntryFile[] {
   }
 
   for (const dirent of dirents) {
+    deadline?.check('discoverEntryFiles');
+
     if (!dirent.isDirectory()) {
       continue;
     }
     const subpackage = dirent.name;
     const filePath = path.resolve(packageRoot, subpackage, 'index.d.ts');
-    if (existsSync(filePath)) {
-      entries.push({ subpackage, filePath });
+    if (!existsSync(filePath)) {
+      continue;
+    }
+
+    const { size } = statSync(filePath);
+    if (size > MAX_ENTRY_FILE_SIZE_BYTES) {
+      throw new ResourceLimitError(
+        `Entry file "${filePath}" is ${size} bytes, exceeding the ${MAX_ENTRY_FILE_SIZE_BYTES}-byte limit`,
+      );
+    }
+
+    entries.push({ subpackage, filePath });
+    if (entries.length > MAX_ENTRY_FILES) {
+      throw new ResourceLimitError(
+        `Package root "${packageRoot}" has more than ${MAX_ENTRY_FILES} entry files`,
+      );
     }
   }
 
@@ -70,13 +94,17 @@ export function discoverEntryFiles(packageRoot: string): PackageEntryFile[] {
 /**
  * Parses every discovered subpackage entry point under `packageRoot` into a single
  * `ts.Program`, with no `tsconfig.json` required. Read-only: never emits, never writes to disk.
+ * An optional `deadline` bounds discovery and is checked immediately around the (unpreemptible)
+ * `ts.createProgram` call — see `Deadline`'s docstring for what this can and can't guarantee.
  */
-export function parsePackage(packageRoot: string): ParsedPackage {
-  const entries = discoverEntryFiles(packageRoot);
+export function parsePackage(packageRoot: string, deadline?: Deadline): ParsedPackage {
+  const entries = discoverEntryFiles(packageRoot, deadline);
+  deadline?.check('parsePackage:createProgram');
   const program = ts.createProgram(
     entries.map((entry) => entry.filePath),
     PACKAGE_COMPILER_OPTIONS,
   );
+  deadline?.check('parsePackage:createProgram');
 
   return {
     program,

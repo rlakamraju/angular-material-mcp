@@ -52,6 +52,23 @@ describe('resolveAngularMaterial', () => {
     expect(result.source).toBe('cwd');
   });
 
+  it('falls through to cwd when ANGULAR_PROJECT_PATH contains a null byte', () => {
+    const result = resolveAngularMaterial(
+      { angularProjectPath: 'bad\0path' },
+      MOCK_PROJECT,
+    );
+
+    expect(result.source).toBe('cwd');
+  });
+
+  it('falls through to cwd when ANGULAR_PROJECT_PATH is longer than the safety cap', () => {
+    const oversized = `/${'a'.repeat(5000)}`;
+
+    const result = resolveAngularMaterial({ angularProjectPath: oversized }, MOCK_PROJECT);
+
+    expect(result.source).toBe('cwd');
+  });
+
   it('throws ModuleResolutionError listing every attempted path when nothing is found', () => {
     const empty = mkdtempSync(path.join(tmpdir(), 'am-mcp-empty-'));
 
