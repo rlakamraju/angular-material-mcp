@@ -8,11 +8,12 @@ import {
   resolveAngularCdk,
   resolveAngularMaterial,
 } from './extractors/module-resolver.js';
-import type { ResolvedAngularMaterial } from './extractors/module-resolver.js';
+import type { ResolvedAngularCdk, ResolvedAngularMaterial } from './extractors/module-resolver.js';
 import { createServer } from './server.js';
 import { loadConfig } from './types/config.js';
 import type { ServerConfig } from './types/config.js';
 import { logger } from './utils/logger.js';
+import { readOwnPackageJson } from './utils/package-info.js';
 
 /** Resolves @angular/material or exits(1) with a fix-instruction message — no fallback data. */
 function resolveOrExit(config: Pick<ServerConfig, 'angularProjectPath'>): ResolvedAngularMaterial {
@@ -28,23 +29,36 @@ function resolveOrExit(config: Pick<ServerConfig, 'angularProjectPath'>): Resolv
   }
 }
 
+/**
+ * Single consolidated startup banner (own package version, detected Material/CDK versions,
+ * resolved project path, active `IMPORT_STYLE`) — logged via `logger.info`, so it's only visible
+ * when `LOG_LEVEL` is `debug` or `info`; `warn`/`error` suppress it like any other info-level log.
+ */
+function logStartupBanner(
+  material: ResolvedAngularMaterial,
+  cdk: ResolvedAngularCdk | undefined,
+  config: ServerConfig,
+): void {
+  const ownVersion = readOwnPackageJson().version ?? '0.0.0';
+  logger.info(
+    [
+      `angular-material-mcp v${ownVersion} starting`,
+      `  @angular/material: ${material.version} (resolved via ${material.source})`,
+      `  @angular/cdk: ${cdk ? `${cdk.version} (resolved via ${cdk.source})` : 'not installed — cdk/* lookups unavailable'}`,
+      `  project path: ${material.projectPath}`,
+      `  import style: ${config.importStyle}`,
+    ].join('\n'),
+  );
+}
+
 async function main(): Promise<void> {
   const config = loadConfig();
   const resolved = resolveOrExit(config);
-  logger.info(
-    `Resolved @angular/material ${resolved.version} at ${resolved.packageRoot} (via ${resolved.source})`,
-  );
 
   // @angular/cdk is an optional second root (Phase 13) — its absence never fails startup, since
   // plenty of Material projects never touch CDK primitives directly.
   const resolvedCdk = resolveAngularCdk(config);
-  if (resolvedCdk) {
-    logger.info(
-      `Resolved @angular/cdk ${resolvedCdk.version} at ${resolvedCdk.packageRoot} (via ${resolvedCdk.source})`,
-    );
-  } else {
-    logger.info('@angular/cdk not found — cdk/* component lookups will be unavailable');
-  }
+  logStartupBanner(resolved, resolvedCdk, config);
 
   const service = createExtractionService(
     resolvedCdk ? { material: resolved, cdk: resolvedCdk } : { material: resolved },
@@ -60,6 +74,8 @@ async function main(): Promise<void> {
         logger.error('Error while closing server', error);
       })
       .finally(() => {
+        service.clearCache();
+        logger.info('angular-material-mcp: server stopped');
         process.exit(0);
       });
   }

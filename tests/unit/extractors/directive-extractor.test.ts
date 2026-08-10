@@ -1,10 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { extractDirectives } from '../../../src/extractors/directive-extractor.js';
 import { parsePackage } from '../../../src/extractors/ts-parser.js';
 import type { ComponentMetadata } from '../../../src/types/component-metadata.js';
+import { logger } from '../../../src/utils/logger.js';
 
 const FIXTURE_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -25,6 +26,23 @@ function findSort(directives: ComponentMetadata[]): ComponentMetadata {
 }
 
 describe('directive-extractor', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('logs a per-entry-file debug timing line for each subpackage processed', () => {
+    const debugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => undefined);
+
+    extractFixtureDirectives();
+
+    expect(debugSpy).toHaveBeenCalled();
+    const lines = debugSpy.mock.calls.map((call) => call[0]);
+    expect(lines.some((line) => line.includes('[extract:directive]') && line.includes('sort'))).toBe(
+      true,
+    );
+    expect(lines.every((line) => /\d+(\.\d+)?ms/.test(line))).toBe(true);
+  });
+
   it('extracts MatSort with selector "[matSort]"', () => {
     const sort = findSort(extractFixtureDirectives());
 

@@ -1,4 +1,5 @@
 import type { ComponentMetadata } from '../types/component-metadata.js';
+import { logger } from '../utils/logger.js';
 import {
   extractInputs,
   extractOutputs,
@@ -35,11 +36,13 @@ export function extractComponents(
   const components: ComponentMetadata[] = [];
 
   for (const entry of parsed.entries) {
+    const startedAt = performance.now();
     const sourceFile = parsed.program.getSourceFile(entry.filePath);
     if (!sourceFile) {
       continue;
     }
 
+    let foundInEntry = 0;
     for (const classDecl of findDecoratedClasses(sourceFile, 'Component')) {
       const selector = getSelector(classDecl, 'Component');
       if (!classDecl.name || selector === undefined) {
@@ -64,7 +67,13 @@ export function extractComponents(
         minimalExample: '',
         version: options.version,
       });
+      foundInEntry += 1;
     }
+
+    logger.debug(
+      `[extract:component] ${options.packageName}/${entry.subpackage}: ` +
+        `${foundInEntry} found in ${(performance.now() - startedAt).toFixed(1)}ms`,
+    );
   }
 
   return components;

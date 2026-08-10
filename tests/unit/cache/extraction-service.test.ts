@@ -67,6 +67,21 @@ describe('extraction-service', () => {
     expect(parseSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('clearCache() drops cached components, forcing re-extraction on the next call', () => {
+    const service = createExtractionService(RESOLVED);
+
+    service.getComponent('table');
+    service.getAllComponents();
+    service.clearCache();
+
+    const parseSpy = vi.spyOn(tsParser, 'parsePackage');
+    service.getComponent('table');
+    expect(parseSpy).toHaveBeenCalledTimes(1);
+
+    service.getAllComponents();
+    expect(parseSpy).toHaveBeenCalledTimes(2);
+  });
+
   it('evicts the LRU component cache entry past maxEntries, forcing re-extraction', () => {
     const service = createExtractionService(RESOLVED, { maxEntries: 2 });
 

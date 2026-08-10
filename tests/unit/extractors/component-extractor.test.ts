@@ -1,10 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { extractComponents } from '../../../src/extractors/component-extractor.js';
 import { parsePackage } from '../../../src/extractors/ts-parser.js';
 import type { ComponentMetadata } from '../../../src/types/component-metadata.js';
+import { logger } from '../../../src/utils/logger.js';
 
 const FIXTURE_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -25,6 +26,23 @@ function findByName(components: ComponentMetadata[], name: string): ComponentMet
 }
 
 describe('component-extractor', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('logs a per-entry-file debug timing line for each subpackage processed', () => {
+    const debugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => undefined);
+
+    extractFixtureComponents();
+
+    expect(debugSpy).toHaveBeenCalled();
+    const lines = debugSpy.mock.calls.map((call) => call[0]);
+    expect(lines.some((line) => line.includes('[extract:component]') && line.includes('table'))).toBe(
+      true,
+    );
+    expect(lines.every((line) => /\d+(\.\d+)?ms/.test(line))).toBe(true);
+  });
+
   it('extracts MatTable with selector "mat-table, table[mat-table]"', () => {
     const table = findByName(extractFixtureComponents(), 'table');
 

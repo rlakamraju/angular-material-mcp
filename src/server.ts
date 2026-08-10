@@ -1,7 +1,3 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import type { ExtractionService } from './cache/extraction-service.js';
@@ -11,26 +7,7 @@ import { registerGetSchematicsUsageTool } from './tools/get-schematics-usage.too
 import { registerGetThemingGuideTool } from './tools/get-theming-guide.tool.js';
 import { registerListComponentsTool } from './tools/list-components.tool.js';
 import { registerSearchComponentsTool } from './tools/search-components.tool.js';
-
-interface OwnPackageJson {
-  name?: string;
-  version?: string;
-}
-
-/**
- * Reads this package's own `package.json` for the MCP `Implementation` info (name/version).
- * Resolved relative to this file rather than `process.cwd()` so it works the same whether
- * running from `src/` (via tsx) or `dist/` (built) — both sit one directory below the package
- * root.
- */
-function readOwnPackageJson(): OwnPackageJson {
-  const packageJsonPath = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '..',
-    'package.json',
-  );
-  return JSON.parse(readFileSync(packageJsonPath, 'utf8')) as OwnPackageJson;
-}
+import { readOwnPackageJson } from './utils/package-info.js';
 
 /** Builds the McpServer instance with every tool registered, ready to `connect()` to a transport. */
 export function createServer(service: ExtractionService): McpServer {

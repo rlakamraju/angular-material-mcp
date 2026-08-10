@@ -38,6 +38,8 @@ export interface ExtractionService {
   getAllComponents(): ComponentMetadata[];
   /** A single component/directive by its `name` (e.g. "table", "cdk/drag-drop"), cached by version + name. */
   getComponent(name: string): ComponentMetadata | undefined;
+  /** Drops every cached entry — called on graceful shutdown so nothing extracted is retained. */
+  clearCache(): void;
 }
 
 function extractRoot(
@@ -116,6 +118,11 @@ export function createExtractionService(
         componentCache.set(cacheKey, found);
       }
       return found;
+    },
+
+    clearCache(): void {
+      componentCache.clear();
+      allComponentsCache.clear();
     },
   };
 }
