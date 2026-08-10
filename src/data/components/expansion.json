@@ -1,0 +1,17 @@
+{
+  "name": "expansion",
+  "standaloneImports": ["MatExpansionModule"],
+  "ngModule": "MatExpansionModule",
+  "cssCustomProperties": [
+    "--mat-expansion-container-background-color",
+    "--mat-expansion-container-text-color",
+    "--mat-expansion-header-text-color"
+  ],
+  "composedWith": ["icon"],
+  "gotchas": [
+    "`mat-accordion`'s `multi` input defaults to `false`, meaning expanding one panel automatically collapses any other open panel in the same accordion — set `multi` explicitly if panels should expand independently.",
+    "`mat-panel-title`/`mat-panel-description` are always rendered, but a panel's body wrapped in `<ng-template matExpansionPanelContent>` is lazy-instantiated only after the panel's first expansion by default — use that template for expensive content instead of putting it directly inside `mat-expansion-panel`.",
+    "Toggling `[expanded]` programmatically in the same tick as `ngAfterViewInit` (e.g. to auto-open a panel on load) can throw `ExpressionChangedAfterItHasBeenCheckedError` — set the initial expanded state from a component property before the view renders instead of mutating it in a lifecycle hook."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatExpansionModule } from '@angular/material/expansion';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatExpansionModule],\n  template: `\n    <mat-accordion>\n      <mat-expansion-panel>\n        <mat-expansion-panel-header>\n          <mat-panel-title>Shipping</mat-panel-title>\n          <mat-panel-description>Address and delivery method</mat-panel-description>\n        </mat-expansion-panel-header>\n        <p>Panel content goes here.</p>\n      </mat-expansion-panel>\n    </mat-accordion>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "badge",
+  "standaloneImports": ["MatBadgeModule"],
+  "ngModule": "MatBadgeModule",
+  "cssCustomProperties": ["--mat-badge-background-color", "--mat-badge-text-color"],
+  "composedWith": ["icon", "button"],
+  "gotchas": [
+    "`matBadge` is an attribute directive applied directly to the host element (an icon, a button, etc.) — there is no separate `<mat-badge>` tag, so nesting an element inside another expecting badge behavior does nothing.",
+    "The badge's accessible label defaults to reading out the badge content itself (e.g. \"5\") unless you set `matBadgeDescription` to something more meaningful like \"5 unread messages\" for screen reader users.",
+    "Setting `matBadge=\"\"` (empty string) still renders an empty badge dot — use `matBadgeHidden` to actually remove the badge from layout and the accessibility tree, rather than trying to hide it by clearing the content."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatBadgeModule } from '@angular/material/badge';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatIconModule } from '@angular/material/icon';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatBadgeModule, MatButtonModule, MatIconModule],\n  template: `\n    <button mat-icon-button matBadge=\"4\" matBadgeColor=\"warn\" matBadgeDescription=\"4 unread messages\">\n      <mat-icon>mail</mat-icon>\n    </button>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

@@ -13,6 +13,26 @@ describe('get-composition-pattern tool', () => {
     expect(result.components).toEqual(expect.arrayContaining(['table', 'sort', 'paginator']));
   });
 
+  it('returns the full curated pattern for the extended-component stepper composition', () => {
+    const result = getCompositionPattern({ patternName: 'stepper-with-forms' });
+
+    if ('isError' in result) {
+      throw new Error('expected a CompositionPattern');
+    }
+    expect(result.name).toBe('stepper-with-forms');
+    expect(result.components).toEqual(expect.arrayContaining(['stepper']));
+  });
+
+  it('returns the full curated pattern for the extended-component tree composition', () => {
+    const result = getCompositionPattern({ patternName: 'tree-with-lazy-loading' });
+
+    if ('isError' in result) {
+      throw new Error('expected a CompositionPattern');
+    }
+    expect(result.name).toBe('tree-with-lazy-loading');
+    expect(result.components).toEqual(expect.arrayContaining(['tree']));
+  });
+
   it('returns a ToolErrorResponse for an unknown pattern key', () => {
     const result = getCompositionPattern({ patternName: 'nonexistent' });
 

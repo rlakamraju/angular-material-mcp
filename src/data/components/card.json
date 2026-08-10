@@ -1,0 +1,17 @@
+{
+  "name": "card",
+  "standaloneImports": ["MatCardModule"],
+  "ngModule": "MatCardModule",
+  "cssCustomProperties": [
+    "--mat-card-title-text-color",
+    "--mat-card-subtitle-text-color",
+    "--mdc-elevated-card-container-color"
+  ],
+  "composedWith": ["button"],
+  "gotchas": [
+    "`mat-card-actions` left-aligns its buttons by default — use the `align=\"end\"` input on `mat-card-actions` to right-align them instead of reaching for custom flex CSS.",
+    "`mat-card-image` (and the `mat-card-sm-image`/`mat-card-md-image`/`mat-card-lg-image` size variants) control their own cropping and aspect ratio — putting a raw `<img>` in a card instead of one of these directives usually breaks the card's expected image sizing.",
+    "MatCard has no built-in click/ripple/focus behavior of its own — it's purely a container, so making an entire card 'clickable' means adding real interactive elements (a button or link) inside it rather than a host click listener on `mat-card`."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatCardModule } from '@angular/material/card';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatCardModule, MatButtonModule],\n  template: `\n    <mat-card>\n      <mat-card-header>\n        <mat-card-title>Shiba Inu</mat-card-title>\n        <mat-card-subtitle>Dog Breed</mat-card-subtitle>\n      </mat-card-header>\n      <mat-card-content>\n        <p>A cute, small dog breed known for its fox-like appearance.</p>\n      </mat-card-content>\n      <mat-card-actions align=\"end\">\n        <button mat-button>Share</button>\n      </mat-card-actions>\n    </mat-card>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

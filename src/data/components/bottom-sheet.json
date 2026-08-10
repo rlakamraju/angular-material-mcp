@@ -1,0 +1,13 @@
+{
+  "name": "bottom-sheet",
+  "standaloneImports": ["MatBottomSheetModule"],
+  "ngModule": "MatBottomSheetModule",
+  "cssCustomProperties": ["--mat-bottom-sheet-container-background-color", "--mat-bottom-sheet-container-text-color"],
+  "composedWith": ["list", "icon"],
+  "gotchas": [
+    "`MatBottomSheet.open()` returns a `MatBottomSheetRef` immediately, before the sheet component is instantiated — code that needs to run after the sheet closes belongs in `afterDismissed()`, not right after the `open()` call.",
+    "Data passed via `open(Component, { data })` is only readable inside the sheet component through `inject(MAT_BOTTOM_SHEET_DATA)` — it is not a component `@Input()`.",
+    "Clicking an item inside the sheet content doesn't dismiss the sheet by itself — call `MatBottomSheetRef.dismiss(result)` explicitly from the click handler, otherwise the sheet stays open until the backdrop is clicked or Escape is pressed."
+  ],
+  "minimalExample": "import { Component, inject } from '@angular/core';\nimport { MatBottomSheet, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatListModule } from '@angular/material/list';\n\n@Component({\n  selector: 'app-actions-sheet',\n  standalone: true,\n  imports: [MatListModule],\n  template: `\n    <mat-nav-list>\n      <a mat-list-item (click)=\"close()\">Share</a>\n      <a mat-list-item (click)=\"close()\">Delete</a>\n    </mat-nav-list>\n  `,\n})\nexport class ActionsSheetComponent {\n  private ref = inject(MatBottomSheetRef<ActionsSheetComponent>);\n\n  close(): void {\n    this.ref.dismiss();\n  }\n}\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule, MatBottomSheetModule],\n  template: `<button mat-button (click)=\"openSheet()\">Open</button>`,\n})\nexport class ExampleComponent {\n  private bottomSheet = inject(MatBottomSheet);\n\n  openSheet(): void {\n    this.bottomSheet.open(ActionsSheetComponent);\n  }\n}\n"
+}

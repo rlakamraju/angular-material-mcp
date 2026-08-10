@@ -71,6 +71,48 @@ describe('get-component-api tool', () => {
     expect(result.minimalExample).toBe('');
   });
 
+  it.each([
+    'stepper',
+    'expansion',
+    'card',
+    'list',
+    'grid-list',
+    'tree',
+    'bottom-sheet',
+    'badge',
+    'slider',
+  ])('overlays non-placeholder Phase 12 curated content for extended component "%s"', (name) => {
+    const service = {
+      getComponent: () => ({
+        name,
+        className: 'Placeholder',
+        importPath: `@angular/material/${name}`,
+        selector: 'placeholder',
+        category: 'uncategorized',
+        description: '',
+        standaloneImports: [],
+        ngModule: '',
+        inputs: [],
+        outputs: [],
+        publicMethods: [],
+        cssCustomProperties: [],
+        composedWith: [],
+        gotchas: [],
+        minimalExample: '',
+        version: '17.3.0',
+      }),
+    };
+
+    const result = getComponentApi(service, { componentName: name });
+
+    if ('isError' in result) {
+      throw new Error(`expected a ComponentMetadata overlay for "${name}"`);
+    }
+    expect(result.gotchas.length).toBeGreaterThan(0);
+    expect(result.minimalExample.length).toBeGreaterThan(0);
+    expect(result.ngModule.length).toBeGreaterThan(0);
+  });
+
   it('returns a ToolErrorResponse for an unknown component name', () => {
     const service = createExtractionService(RESOLVED);
 

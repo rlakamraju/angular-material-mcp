@@ -1,0 +1,17 @@
+{
+  "name": "list",
+  "standaloneImports": ["MatListModule"],
+  "ngModule": "MatListModule",
+  "cssCustomProperties": [
+    "--mat-list-list-item-label-text-color",
+    "--mat-list-list-item-supporting-text-color",
+    "--mat-list-list-item-leading-icon-color"
+  ],
+  "composedWith": ["icon"],
+  "gotchas": [
+    "`mat-selection-list`/`mat-list-option` selection state needs to be read through `(selectionChange)` or the list's `selectedOptions` `SelectionModel` — binding `[selected]` on `mat-list-option` only sets the initial state, it doesn't itself notify you of subsequent user toggles.",
+    "`mat-nav-list` items are meant to be `<a mat-list-item>` anchors that handle their own navigation — using `<button mat-list-item>` inside a `mat-nav-list` still looks right but loses anchor-specific behavior (open in new tab, middle-click, etc.) that's the point of a nav list.",
+    "Multi-line list items require the exact `matListItemTitle`/`matListItemLine` structure — plain text nodes placed directly inside `mat-list-item` without these directives collapse to a single line and don't get the multi-line height/typography tokens."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { MatListModule } from '@angular/material/list';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [CommonModule, MatListModule],\n  template: `\n    <mat-selection-list (selectionChange)=\"onChange($event)\">\n      <mat-list-option *ngFor=\"let fruit of fruits\" [value]=\"fruit\">{{ fruit }}</mat-list-option>\n    </mat-selection-list>\n  `,\n})\nexport class ExampleComponent {\n  fruits = ['Apple', 'Banana', 'Cherry'];\n\n  onChange(event: unknown): void {\n    console.log(event);\n  }\n}\n"
+}
