@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { readCuratedData } from '../data/data-loader.js';
 import { schematicInfoSchema } from '../data/schemas.js';
 import type { GetSchematicsUsageResponse, ToolErrorResponse } from '../types/tool-responses.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const getSchematicsUsageInputShape = {
   schematicName: z.string().min(1).describe('Schematic key, e.g. "ng-add".'),
@@ -41,6 +41,6 @@ export function registerGetSchematicsUsageTool(server: McpServer): void {
         'an Angular Material CLI schematic such as ng add.',
       inputSchema: getSchematicsUsageInputShape,
     },
-    (input) => toCallToolResult(getSchematicsUsage(input)),
+    (input) => safeToolResult(() => getSchematicsUsage(input)),
   );
 }

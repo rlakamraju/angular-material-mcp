@@ -25,6 +25,31 @@ export type ResolvedAngularCdk = ResolvedPackage;
 /** Bounds the parent-directory walk so a misconfigured cwd can't loop toward the filesystem root forever. */
 const MAX_PARENT_WALK_DEPTH = 20;
 
+/**
+ * `ANGULAR_PROJECT_PATH` is external input (an env var set by whoever configures the MCP client),
+ * so it's validated before ever reaching `path.resolve`/the filesystem rather than trusted as a
+ * well-formed path. A generous cap well above any real path length guards against pathological
+ * input; `path.resolve` itself throws on embedded null bytes, which `safeResolveCandidate` turns
+ * into a graceful "skip this candidate" instead of an unhandled exception.
+ */
+const MAX_PROJECT_PATH_LENGTH = 4096;
+
+/**
+ * Resolves an external path candidate defensively: an empty, oversized, or otherwise malformed
+ * value is treated as "not usable" (falls through the resolution chain) rather than throwing or
+ * being probed as-is.
+ */
+function safeResolveCandidate(candidate: string): string | undefined {
+  if (candidate.length === 0 || candidate.length > MAX_PROJECT_PATH_LENGTH) {
+    return undefined;
+  }
+  try {
+    return path.resolve(candidate);
+  } catch {
+    return undefined;
+  }
+}
+
 /** node_modules path segments identifying a scoped package, e.g. ['@angular', 'material']. */
 type PackageSegments = readonly [scope: string, name: string];
 
@@ -109,11 +134,13 @@ function resolvePackageChain(
   const attempted: string[] = [];
 
   if (config.angularProjectPath !== undefined) {
-    const candidate = path.resolve(config.angularProjectPath);
-    attempted.push(candidate);
-    const found = readPackageAt(candidate, segments);
-    if (found) {
-      return { found: { ...found, source: 'env' }, attempted };
+    const candidate = safeResolveCandidate(config.angularProjectPath);
+    if (candidate !== undefined) {
+      attempted.push(candidate);
+      const found = readPackageAt(candidate, segments);
+      if (found) {
+        return { found: { ...found, source: 'env' }, attempted };
+      }
     }
   }
 

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { readCuratedData } from '../data/data-loader.js';
 import { themingGuideSchema } from '../data/schemas.js';
 import type { GetThemingGuideResponse, ToolErrorResponse } from '../types/tool-responses.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const getThemingGuideInputShape = {
   topic: z.string().min(1).describe('Theming topic key, e.g. "initial-setup".'),
@@ -41,6 +41,6 @@ export function registerGetThemingGuideTool(server: McpServer): void {
         'theming topic such as initial setup, custom themes, typography, or dark mode.',
       inputSchema: getThemingGuideInputShape,
     },
-    (input) => toCallToolResult(getThemingGuide(input)),
+    (input) => safeToolResult(() => getThemingGuide(input)),
   );
 }

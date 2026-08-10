@@ -6,7 +6,7 @@ import { readCuratedData } from '../data/data-loader.js';
 import { componentOverlaySchema } from '../data/schemas.js';
 import type { ComponentOverlay } from '../types/component-metadata.js';
 import type { GetComponentApiResponse, ToolErrorResponse } from '../types/tool-responses.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const getComponentApiInputShape = {
   componentName: z.string().min(1).describe('Component name as used in tool calls, e.g. "table".'),
@@ -73,6 +73,6 @@ export function registerGetComponentApiTool(
         'gotchas/examples for a single Angular Material component or directive.',
       inputSchema: getComponentApiInputShape,
     },
-    (input) => toCallToolResult(getComponentApi(service, input)),
+    (input) => safeToolResult(() => getComponentApi(service, input)),
   );
 }

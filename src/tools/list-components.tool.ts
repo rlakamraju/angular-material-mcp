@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { ExtractionService } from '../cache/extraction-service.js';
 import type { ComponentSummary, ListComponentsResponse } from '../types/tool-responses.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const listComponentsInputShape = {
   category: z.string().optional().describe('Filter results to this category, e.g. "data-table".'),
@@ -51,6 +51,6 @@ export function registerListComponentsTool(
         '@angular/material version, optionally filtered by category.',
       inputSchema: listComponentsInputShape,
     },
-    (input) => toCallToolResult(listComponents(service, input)),
+    (input) => safeToolResult(() => listComponents(service, input)),
   );
 }

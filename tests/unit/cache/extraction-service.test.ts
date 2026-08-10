@@ -1,9 +1,12 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createExtractionService } from '../../../src/cache/extraction-service.js';
 import * as tsParser from '../../../src/extractors/ts-parser.js';
+import { MAX_ENTRY_FILES, ResourceLimitError } from '../../../src/utils/resource-limits.js';
 
 const MATERIAL_FIXTURE_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -79,6 +82,46 @@ describe('extraction-service', () => {
 
     service.getComponent('table'); // evicted -> forces re-extraction
     expect(parseSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('extraction-service resource hardening', () => {
+  /** Builds a package root with `count` subpackages, each a trivial valid `index.d.ts`. */
+  function buildDegeneratePackageRoot(count: number): string {
+    const root = mkdtempSync(path.join(tmpdir(), 'am-mcp-degenerate-root-'));
+    for (let i = 0; i < count; i += 1) {
+      const subpackageDir = path.join(root, `sub-${i}`);
+      mkdirSync(subpackageDir);
+      writeFileSync(path.join(subpackageDir, 'index.d.ts'), 'export declare const x: number;\n');
+    }
+    return root;
+  }
+
+  it('getAllComponents() rejects a degenerate material root within budget rather than hanging', () => {
+    const degenerateRoot = buildDegeneratePackageRoot(MAX_ENTRY_FILES + 50);
+    const service = createExtractionService({
+      material: { packageRoot: degenerateRoot, version: '17.3.0' },
+    });
+
+    const start = performance.now();
+    expect(() => service.getAllComponents()).toThrow(ResourceLimitError);
+    const elapsed = performance.now() - start;
+
+    expect(elapsed).toBeLessThan(2000);
+  });
+
+  it('getComponent() rejects a degenerate cdk root within budget rather than hanging', () => {
+    const degenerateRoot = buildDegeneratePackageRoot(MAX_ENTRY_FILES + 50);
+    const service = createExtractionService({
+      material: MATERIAL_ROOT,
+      cdk: { packageRoot: degenerateRoot, version: '17.3.0' },
+    });
+
+    const start = performance.now();
+    expect(() => service.getComponent('cdk/drag-drop')).toThrow(ResourceLimitError);
+    const elapsed = performance.now() - start;
+
+    expect(elapsed).toBeLessThan(2000);
   });
 });
 

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { ExtractionService } from '../cache/extraction-service.js';
 import type { SearchComponentsResponse, SearchResult } from '../types/tool-responses.js';
 import { rankByRelevance } from '../utils/fuzzy-search.js';
-import { toCallToolResult } from '../utils/mcp-response.js';
+import { safeToolResult } from '../utils/mcp-response.js';
 
 export const searchComponentsInputShape = {
   query: z
@@ -52,6 +52,6 @@ export function registerSearchComponentsTool(
         'of the desired UI behavior, ranked by relevance.',
       inputSchema: searchComponentsInputShape,
     },
-    (input) => toCallToolResult(searchComponents(service, input)),
+    (input) => safeToolResult(() => searchComponents(service, input)),
   );
 }

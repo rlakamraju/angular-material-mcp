@@ -3,6 +3,8 @@ import { extractDirectives } from '../extractors/directive-extractor.js';
 import { parsePackage } from '../extractors/ts-parser.js';
 import type { ResolvedAngularCdk, ResolvedAngularMaterial } from '../extractors/module-resolver.js';
 import type { ComponentMetadata } from '../types/component-metadata.js';
+import { Deadline } from '../utils/deadline.js';
+import { DEFAULT_EXTRACTION_TIMEOUT_MS } from '../utils/resource-limits.js';
 import { MemoryCache } from './memory-cache.js';
 
 const ANGULAR_MATERIAL_PACKAGE_NAME = '@angular/material';
@@ -27,6 +29,8 @@ export interface ExtractionServiceRoots {
 export interface ExtractionServiceOptions {
   /** Max entries retained in the per-component LRU cache. Passed through to `MemoryCache`. */
   maxEntries?: number;
+  /** Wall-clock budget (ms) for a full extraction pass across every resolved root. Defaults to 5s. */
+  extractionTimeoutMs?: number;
 }
 
 export interface ExtractionService {
@@ -39,9 +43,10 @@ export interface ExtractionService {
 function extractRoot(
   root: RootPackage,
   packageName: string,
+  deadline: Deadline,
   namePrefix?: string,
 ): ComponentMetadata[] {
-  const parsed = parsePackage(root.packageRoot);
+  const parsed = parsePackage(root.packageRoot, deadline);
   // Built conditionally rather than `{ ..., namePrefix }` because `namePrefix` is an optional
   // property (`exactOptionalPropertyTypes`) — it must be omitted entirely, not set to `undefined`.
   const options =
@@ -66,16 +71,25 @@ export function createExtractionService(
   options: ExtractionServiceOptions = {},
 ): ExtractionService {
   const cacheVersionKey = `${roots.material.version}|${roots.cdk?.version ?? ''}`;
+  const extractionTimeoutMs = options.extractionTimeoutMs ?? DEFAULT_EXTRACTION_TIMEOUT_MS;
 
   const componentCache = new MemoryCache<string, ComponentMetadata>(options);
   const allComponentsCache = new MemoryCache<string, ComponentMetadata[]>({ maxEntries: 1 });
 
+  // One shared deadline per extraction pass: the budget covers both roots combined, not each
+  // independently, so a slow material root can't leave the cdk root a fresh full budget of its own.
   function extractAll(): ComponentMetadata[] {
-    const materialResults = extractRoot(roots.material, ANGULAR_MATERIAL_PACKAGE_NAME);
+    const deadline = new Deadline(extractionTimeoutMs);
+    const materialResults = extractRoot(roots.material, ANGULAR_MATERIAL_PACKAGE_NAME, deadline);
     if (!roots.cdk) {
       return materialResults;
     }
-    const cdkResults = extractRoot(roots.cdk, ANGULAR_CDK_PACKAGE_NAME, CDK_NAME_PREFIX);
+    const cdkResults = extractRoot(
+      roots.cdk,
+      ANGULAR_CDK_PACKAGE_NAME,
+      deadline,
+      CDK_NAME_PREFIX,
+    );
     return [...materialResults, ...cdkResults];
   }
 
