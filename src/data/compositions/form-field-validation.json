@@ -1,0 +1,19 @@
+{
+  "name": "form-field-validation",
+  "description": "Wires a MatFormField + matInput to Reactive Forms validators, showing mat-error messages and disabling submit until the form is valid.",
+  "components": ["form-field", "input"],
+  "standaloneImports": [
+    "MatFormFieldModule",
+    "MatInputModule",
+    "ReactiveFormsModule",
+    "MatButtonModule"
+  ],
+  "templateCode": "<form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\">\n  <mat-form-field appearance=\"outline\">\n    <mat-label>Email</mat-label>\n    <input matInput formControlName=\"email\" />\n    <mat-error *ngIf=\"form.controls.email.hasError('required')\">Email is required</mat-error>\n    <mat-error *ngIf=\"form.controls.email.hasError('email')\">Enter a valid email address</mat-error>\n  </mat-form-field>\n\n  <button mat-raised-button color=\"primary\" type=\"submit\" [disabled]=\"form.invalid\">Submit</button>\n</form>\n",
+  "componentCode": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\n\n@Component({\n  selector: 'app-signup-form',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],\n  templateUrl: './signup-form.component.html',\n})\nexport class SignupFormComponent {\n  private fb = inject(FormBuilder);\n\n  form = this.fb.group({\n    email: ['', [Validators.required, Validators.email]],\n  });\n\n  onSubmit(): void {\n    if (this.form.invalid) {\n      this.form.markAllAsTouched();\n      return;\n    }\n    console.log(this.form.value);\n  }\n}\n",
+  "notes": [
+    "mat-error only renders once its field is touched/dirty or the form has been submitted — markAllAsTouched() in the invalid branch of onSubmit is what makes validation errors appear on a submit attempt with untouched fields.",
+    "hasError() checks apply to the FormControl, not the DOM element — keep the formControlName and the property access in the template in sync when renaming a control.",
+    "Validators.email only checks basic format; pair it with a server-side check for anything security- or delivery-sensitive."
+  ],
+  "version": "17.3.0"
+}

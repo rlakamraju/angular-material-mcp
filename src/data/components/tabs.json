@@ -1,0 +1,17 @@
+{
+  "name": "tabs",
+  "standaloneImports": ["MatTabsModule"],
+  "ngModule": "MatTabsModule",
+  "cssCustomProperties": [
+    "--mat-tab-header-active-label-text-color",
+    "--mat-tab-header-inactive-label-text-color",
+    "--mat-tab-header-active-ripple-color"
+  ],
+  "composedWith": [],
+  "gotchas": [
+    "Each `mat-tab`'s content is instantiated the first time that tab becomes active and stays in the DOM (just hidden) afterward — don't assume components inside a tab you've already visited get re-created when you switch back to it.",
+    "Binding `[(selectedIndex)]` and listening to `(selectedTabChange)` on the same `mat-tab-group` both fire — guard against feedback loops if the change handler also reassigns `selectedIndex`.",
+    "Dynamically adding/removing `mat-tab`s shifts the indices of the remaining tabs — a stored `selectedIndex` from before the change can silently point at a different tab afterward."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatTabsModule } from '@angular/material/tabs';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatTabsModule],\n  template: `\n    <mat-tab-group>\n      <mat-tab label=\"First\">Content for the first tab.</mat-tab>\n      <mat-tab label=\"Second\">Content for the second tab.</mat-tab>\n    </mat-tab-group>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

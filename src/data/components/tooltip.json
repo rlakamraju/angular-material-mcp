@@ -1,0 +1,13 @@
+{
+  "name": "tooltip",
+  "standaloneImports": ["MatTooltipModule"],
+  "ngModule": "MatTooltipModule",
+  "cssCustomProperties": ["--mat-tooltip-container-color", "--mat-tooltip-supporting-text-color"],
+  "composedWith": ["button"],
+  "gotchas": [
+    "matTooltip on a disabled `<button>` never shows, because disabled native elements don't receive the mouse/focus events the tooltip listens for — wrap the button or drive `matTooltipDisabled` from your own state if you need a tooltip on a disabled control.",
+    "Touch devices show the tooltip on long-press by default (`touchGestures: 'auto'`), which can conflict with a custom long-press interaction on the same element — set `touchGestures: 'off'` if you're handling touch yourself.",
+    "`matTooltipPosition` is a hint, not a guarantee — MatTooltip repositions itself when the requested position would overflow the viewport, so don't rely on it for pixel-exact layout."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatTooltipModule } from '@angular/material/tooltip';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule, MatTooltipModule],\n  template: `<button mat-icon-button matTooltip=\"Delete item\">Delete</button>`,\n})\nexport class ExampleComponent {}\n"
+}

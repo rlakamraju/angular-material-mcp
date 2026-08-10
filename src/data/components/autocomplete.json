@@ -1,0 +1,13 @@
+{
+  "name": "autocomplete",
+  "standaloneImports": ["MatAutocompleteModule"],
+  "ngModule": "MatAutocompleteModule",
+  "cssCustomProperties": ["--mat-autocomplete-background-color"],
+  "composedWith": ["form-field", "input", "chips"],
+  "gotchas": [
+    "mat-autocomplete renders nothing until it's connected to an input via `[matAutocomplete]` — the panel definition and the triggering input are two separate elements that must be wired together explicitly.",
+    "`displayWith` is required whenever option values are objects rather than primitives, or the input shows `[object Object]` after a selection instead of the intended label.",
+    "Filtering is entirely your own responsibility — MatAutocomplete does not filter `options` for you; subscribe to the control's `valueChanges` and recompute the filtered list yourself."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\nimport { Observable } from 'rxjs';\nimport { map, startWith } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatAutocompleteModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, CommonModule],\n  template: `\n    <mat-form-field>\n      <mat-label>Fruit</mat-label>\n      <input matInput [formControl]=\"control\" [matAutocomplete]=\"auto\" />\n    </mat-form-field>\n    <mat-autocomplete #auto=\"matAutocomplete\">\n      <mat-option *ngFor=\"let option of filteredOptions$ | async\" [value]=\"option\">\n        {{ option }}\n      </mat-option>\n    </mat-autocomplete>\n  `,\n})\nexport class ExampleComponent {\n  control = new FormControl('');\n  options = ['Apple', 'Banana', 'Cherry'];\n  filteredOptions$: Observable<string[]> = this.control.valueChanges.pipe(\n    startWith(''),\n    map((value) => this.options.filter((option) => option.toLowerCase().includes((value ?? '').toLowerCase()))),\n  );\n}\n"
+}

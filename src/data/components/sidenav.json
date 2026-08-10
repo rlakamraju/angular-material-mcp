@@ -1,0 +1,16 @@
+{
+  "name": "sidenav",
+  "standaloneImports": ["MatSidenavModule"],
+  "ngModule": "MatSidenavModule",
+  "cssCustomProperties": [
+    "--mat-sidenav-container-background-color",
+    "--mat-sidenav-container-shape"
+  ],
+  "composedWith": ["toolbar", "list"],
+  "gotchas": [
+    "`mat-sidenav-content` must be the sibling immediately following the `mat-sidenav`(s) inside `mat-sidenav-container` — the container measures and positions content based on that structure, not arbitrary nesting.",
+    "`mode=\"side\"` permanently reserves layout space, while the default `\"over\"` overlays content. Toggling between modes responsively (e.g. via BreakpointObserver) without also toggling `opened` can leave a `side` sidenav permanently visible.",
+    "`mat-sidenav-container` needs an explicit height from its own ancestor layout (e.g. `height: 100vh` on a wrapping element) — without one, the sidenav's scrolling/backdrop calculations collapse to zero height."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatListModule } from '@angular/material/list';\nimport { MatSidenavModule } from '@angular/material/sidenav';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatSidenavModule, MatListModule],\n  template: `\n    <mat-sidenav-container style=\"height: 300px\">\n      <mat-sidenav mode=\"side\" opened>\n        <mat-nav-list>\n          <a mat-list-item>Home</a>\n          <a mat-list-item>Settings</a>\n        </mat-nav-list>\n      </mat-sidenav>\n      <mat-sidenav-content>Main content</mat-sidenav-content>\n    </mat-sidenav-container>\n  `,\n})\nexport class ExampleComponent {}\n"
+}

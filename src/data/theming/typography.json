@@ -1,0 +1,13 @@
+{
+  "topic": "typography",
+  "version": "17.3.0",
+  "approach": "Set typography through the same mat.theme mixin used for color — either by name (a font family string) for Material's default M3 sizes/weights, or with a config map for per-role font family and weight control.",
+  "setupCode": "@use '@angular/material' as mat;\n\nhtml {\n  @include mat.theme((\n    color: mat.$violet-palette,\n    typography: (\n      plain-family: 'Inter, sans-serif',\n      brand-family: 'Inter, sans-serif',\n      bold-weight: 700,\n      medium-weight: 500,\n      regular-weight: 400,\n    ),\n    density: 0,\n  ));\n}\n\nbody {\n  // Google Fonts (or a self-hosted equivalent) must be loaded separately —\n  // mat.theme only emits CSS custom properties, not a @font-face or <link>.\n  font-family: 'Inter', sans-serif;\n}\n",
+  "explanation": "Passing a bare string (e.g. typography: Roboto) to mat.theme sets every Material type role to that one font family at Material's default M3 sizes/weights. Passing a map instead lets you set the font family (and optionally per-role weight) without touching the size/line-height defaults, which are already tuned to the M3 spec. Angular Material only emits typography-related CSS custom properties (--mat-sys-*) — loading the actual font file (a Google Fonts <link>, a self-hosted @font-face, etc.) is your responsibility, exactly as in a plain CSS project.",
+  "relatedTopics": ["initial-setup", "custom-theme", "css-custom-properties-reference"],
+  "gotchas": [
+    "Setting typography via mat.theme does not load the font file — forgetting the accompanying <link>/@font-face means every component silently falls back to the browser's default sans-serif rather than erroring.",
+    "The per-role type scale (display/headline/title/body/label, each in large/medium/small) is derived from M3 defaults and isn't part of the simplified typography map — use the lower-level typography-level mixins if you need to override individual role sizes rather than just family/weights.",
+    "A typography map applies globally to every Material component reading the shared --mat-sys-* tokens; scoping a different typeface to one section of the app means re-including mat.theme (or just its typography portion) inside that section's own selector, not overriding font-family in plain CSS after the fact."
+  ]
+}

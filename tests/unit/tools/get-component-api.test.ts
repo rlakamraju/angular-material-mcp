@@ -22,10 +22,53 @@ describe('get-component-api tool', () => {
     expect(result).toMatchObject({
       name: 'table',
       className: 'MatTable',
-      gotchas: [],
-      composedWith: [],
     });
     expect((result as { inputs: unknown[] }).inputs.length).toBeGreaterThan(0);
+  });
+
+  it('overlays curated gotchas/minimalExample from src/data/components onto the extracted metadata', () => {
+    const service = createExtractionService(RESOLVED);
+
+    const result = getComponentApi(service, { componentName: 'table' });
+
+    if ('isError' in result) {
+      throw new Error('expected a ComponentMetadata');
+    }
+    expect(result.gotchas.length).toBeGreaterThan(0);
+    expect(result.minimalExample.length).toBeGreaterThan(0);
+    expect(result.composedWith).toEqual(expect.arrayContaining(['sort', 'paginator']));
+    expect(result.standaloneImports).toEqual(['MatTableModule']);
+  });
+
+  it('returns extracted metadata unchanged when no curated overlay file exists for the component', () => {
+    const service = {
+      getComponent: () => ({
+        name: 'no-overlay-for-this-name',
+        className: 'MatNoOverlay',
+        importPath: '@angular/material/no-overlay-for-this-name',
+        selector: 'mat-no-overlay',
+        category: 'uncategorized',
+        description: '',
+        standaloneImports: [],
+        ngModule: '',
+        inputs: [],
+        outputs: [],
+        publicMethods: [],
+        cssCustomProperties: [],
+        composedWith: [],
+        gotchas: [],
+        minimalExample: '',
+        version: '17.3.0',
+      }),
+    };
+
+    const result = getComponentApi(service, { componentName: 'no-overlay-for-this-name' });
+
+    if ('isError' in result) {
+      throw new Error('expected a ComponentMetadata');
+    }
+    expect(result.gotchas).toEqual([]);
+    expect(result.minimalExample).toBe('');
   });
 
   it('returns a ToolErrorResponse for an unknown component name', () => {

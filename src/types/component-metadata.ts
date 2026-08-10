@@ -60,6 +60,23 @@ export interface InputMetadata {
   deprecated?: string;
 }
 
+/**
+ * Curated per-component overlay merged onto extracted `ComponentMetadata` by `get_component_api`.
+ * Covers exactly the fields extraction can't derive from `.d.ts` files alone and therefore always
+ * hardcodes empty (`standaloneImports`, `ngModule`, `cssCustomProperties`, `composedWith`,
+ * `gotchas`, `minimalExample`) — see `component-extractor.ts`/`directive-extractor.ts`.
+ */
+export interface ComponentOverlay {
+  /** Component name, must match the filename (e.g. "table" for `table.json`). */
+  name: string;
+  standaloneImports: string[];
+  ngModule: string;
+  cssCustomProperties: string[];
+  composedWith: string[];
+  gotchas: string[];
+  minimalExample: string;
+}
+
 export interface OutputMetadata {
   name: string;
   eventPayloadType: string;

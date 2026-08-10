@@ -1,0 +1,19 @@
+{
+  "name": "chips-with-autocomplete",
+  "description": "A tag input combining mat-chip-grid for the selected tags with a MatAutocomplete panel for suggestions, supporting both free-text entry and picking a suggestion.",
+  "components": ["chips", "autocomplete", "form-field"],
+  "standaloneImports": [
+    "MatChipsModule",
+    "MatAutocompleteModule",
+    "MatFormFieldModule",
+    "MatIconModule"
+  ],
+  "templateCode": "<mat-form-field appearance=\"outline\">\n  <mat-label>Tags</mat-label>\n  <mat-chip-grid #chipGrid aria-label=\"Tag selection\">\n    <mat-chip *ngFor=\"let tag of tags\" (removed)=\"remove(tag)\">\n      {{ tag }}\n      <button matChipRemove><mat-icon>cancel</mat-icon></button>\n    </mat-chip>\n  </mat-chip-grid>\n  <input\n    placeholder=\"Add a tag...\"\n    [matChipInputFor]=\"chipGrid\"\n    [matAutocomplete]=\"auto\"\n    (matChipInputTokenEnd)=\"addFromInput($event)\"\n  />\n  <mat-autocomplete #auto=\"matAutocomplete\" (optionSelected)=\"addFromOption($event)\">\n    <mat-option *ngFor=\"let suggestion of filteredSuggestions\" [value]=\"suggestion\">\n      {{ suggestion }}\n    </mat-option>\n  </mat-autocomplete>\n</mat-form-field>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';\nimport { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatIconModule } from '@angular/material/icon';\n\nconst ALL_SUGGESTIONS = ['angular', 'material', 'typescript', 'rxjs'];\n\n@Component({\n  selector: 'app-tag-input',\n  standalone: true,\n  imports: [CommonModule, MatChipsModule, MatAutocompleteModule, MatFormFieldModule, MatIconModule],\n  templateUrl: './tag-input.component.html',\n})\nexport class TagInputComponent {\n  tags: string[] = [];\n  filteredSuggestions = ALL_SUGGESTIONS;\n\n  addFromInput(event: MatChipInputEvent): void {\n    const value = (event.value ?? '').trim();\n    if (value) {\n      this.tags.push(value);\n    }\n    event.chipInput?.clear();\n  }\n\n  addFromOption(event: MatAutocompleteSelectedEvent): void {\n    this.tags.push(event.option.viewValue);\n  }\n\n  remove(tag: string): void {\n    this.tags = this.tags.filter((t) => t !== tag);\n  }\n}\n",
+  "notes": [
+    "matChipInputFor and matAutocomplete are both bound to the same input element but are independent integrations — matChipInputTokenEnd fires on separator keys (Enter/comma by default) for free-text entry, while (optionSelected) fires when a suggestion is picked from the panel; a complete implementation needs to handle both.",
+    "Always call event.chipInput?.clear() after committing a chip from matChipInputTokenEnd, or the raw text stays in the input alongside the newly added chip.",
+    "The suggestion list here is a plain array filtered by hand — pair the input's own (input) event with a filter over ALL_SUGGESTIONS if you want live filtering rather than a static list."
+  ],
+  "version": "17.3.0"
+}

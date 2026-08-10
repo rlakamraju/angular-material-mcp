@@ -1,0 +1,22 @@
+{
+  "name": "sidenav-toolbar-layout",
+  "description": "The standard app-shell layout: a MatToolbar with a menu button that toggles a MatSidenav, wrapping a routed content area.",
+  "components": ["sidenav", "toolbar"],
+  "standaloneImports": [
+    "MatSidenavModule",
+    "MatToolbarModule",
+    "MatButtonModule",
+    "MatIconModule",
+    "MatListModule",
+    "RouterLink",
+    "RouterOutlet"
+  ],
+  "templateCode": "<mat-sidenav-container class=\"app-shell\">\n  <mat-sidenav #drawer mode=\"side\" opened=\"true\">\n    <mat-nav-list>\n      <a mat-list-item routerLink=\"/\">Home</a>\n      <a mat-list-item routerLink=\"/settings\">Settings</a>\n    </mat-nav-list>\n  </mat-sidenav>\n\n  <mat-sidenav-content>\n    <mat-toolbar color=\"primary\">\n      <button mat-icon-button (click)=\"drawer.toggle()\" aria-label=\"Toggle navigation\">\n        <mat-icon>menu</mat-icon>\n      </button>\n      <span>My App</span>\n    </mat-toolbar>\n\n    <div class=\"app-shell__content\">\n      <router-outlet></router-outlet>\n    </div>\n  </mat-sidenav-content>\n</mat-sidenav-container>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { RouterLink, RouterOutlet } from '@angular/router';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatListModule } from '@angular/material/list';\nimport { MatSidenavModule } from '@angular/material/sidenav';\nimport { MatToolbarModule } from '@angular/material/toolbar';\n\n@Component({\n  selector: 'app-shell',\n  standalone: true,\n  imports: [\n    RouterLink,\n    RouterOutlet,\n    MatSidenavModule,\n    MatToolbarModule,\n    MatButtonModule,\n    MatIconModule,\n    MatListModule,\n  ],\n  templateUrl: './app-shell.component.html',\n})\nexport class AppShellComponent {}\n",
+  "notes": [
+    "mat-sidenav-content must immediately follow the mat-sidenav element(s) inside mat-sidenav-container for the container's layout measurements to work correctly.",
+    "mat-sidenav-container needs an ancestor that gives it real height (e.g. a top-level layout element set to height: 100vh) — without one it collapses to zero height and the sidenav appears broken.",
+    "For a responsive shell, switch mode between 'over' and 'side' (and opened accordingly) using BreakpointObserver from @angular/cdk/layout rather than hardcoding mode."
+  ],
+  "version": "17.3.0"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "chips",
+  "standaloneImports": ["MatChipsModule"],
+  "ngModule": "MatChipsModule",
+  "cssCustomProperties": [
+    "--mat-chip-container-color",
+    "--mat-chip-label-text-color",
+    "--mat-chip-selected-container-color"
+  ],
+  "composedWith": ["autocomplete", "form-field"],
+  "gotchas": [
+    "As of Angular Material 17, the removable/editable chip APIs live on `mat-chip-grid`/`MatChipGrid` (paired with `matChipInputFor`) — `mat-chip-list` still exists but only supports the older, non-input-integrated selection use case.",
+    "A chip's remove icon needs an explicit `(removed)` handler wired to actually delete the item from your data array — `matChipRemove` only renders the affordance and emits the event, it does not remove anything itself.",
+    "Chips inside a `mat-chip-grid` each participate in the surrounding form's tab order as individual focusable cells — an unbounded number of chips can noticeably lengthen keyboard navigation through a form."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { MatChipsModule } from '@angular/material/chips';\nimport { MatIconModule } from '@angular/material/icon';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatChipsModule, MatIconModule, CommonModule],\n  template: `\n    <mat-chip-set>\n      <mat-chip *ngFor=\"let fruit of fruits\" (removed)=\"remove(fruit)\">\n        {{ fruit }}\n        <button matChipRemove><mat-icon>cancel</mat-icon></button>\n      </mat-chip>\n    </mat-chip-set>\n  `,\n})\nexport class ExampleComponent {\n  fruits = ['Apple', 'Banana'];\n\n  remove(fruit: string): void {\n    this.fruits = this.fruits.filter((f) => f !== fruit);\n  }\n}\n"
+}

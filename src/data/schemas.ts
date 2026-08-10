@@ -21,6 +21,18 @@ export const compositionPatternSchema = z
   })
   .strict();
 
+export const componentOverlaySchema = z
+  .object({
+    name: z.string().min(1),
+    standaloneImports: z.array(z.string().min(1)).min(1),
+    ngModule: z.string().min(1),
+    cssCustomProperties: z.array(z.string()),
+    composedWith: z.array(z.string()),
+    gotchas: z.array(z.string()).min(1),
+    minimalExample: z.string().min(1),
+  })
+  .strict();
+
 const schematicOptionSchema = z
   .object({
     name: z.string().min(1),

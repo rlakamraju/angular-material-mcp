@@ -1,0 +1,16 @@
+{
+  "name": "datepicker",
+  "standaloneImports": ["MatDatepickerModule", "MatNativeDateModule"],
+  "ngModule": "MatDatepickerModule",
+  "cssCustomProperties": [
+    "--mat-datepicker-calendar-container-background-color",
+    "--mat-datepicker-calendar-date-selected-state-background-color"
+  ],
+  "composedWith": ["form-field", "input"],
+  "gotchas": [
+    "MatDatepicker needs a date adapter provided (`MatNativeDateModule` for native `Date` objects, or one of the moment/Luxon adapter providers) — without one, the calendar fails to open with an injection error rather than silently using a default.",
+    "The datepicker input's bound value is a `Date` (or whatever the configured adapter's date type is), not a formatted string — display formatting is controlled by `MAT_DATE_FORMATS`, not by transforming the bound value yourself.",
+    "`[min]`/`[max]` and a custom `[matDatepickerFilter]` are evaluated independently — a date that passes the filter can still be rejected for being outside `[min, max]`, and vice versa, so mismatched constraints between the two are a common source of \"selectable in the calendar but rejected on submit\" bugs."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatNativeDateModule } from '@angular/material/core';\nimport { MatDatepickerModule } from '@angular/material/datepicker';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, FormsModule],\n  template: `\n    <mat-form-field>\n      <mat-label>Start date</mat-label>\n      <input matInput [matDatepicker]=\"picker\" [(ngModel)]=\"startDate\" />\n      <mat-datepicker-toggle matIconSuffix [for]=\"picker\"></mat-datepicker-toggle>\n      <mat-datepicker #picker></mat-datepicker>\n    </mat-form-field>\n  `,\n})\nexport class ExampleComponent {\n  startDate: Date | null = null;\n}\n"
+}

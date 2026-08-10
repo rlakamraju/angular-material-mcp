@@ -1,0 +1,17 @@
+{
+  "name": "form-field",
+  "standaloneImports": ["MatFormFieldModule"],
+  "ngModule": "MatFormFieldModule",
+  "cssCustomProperties": [
+    "--mat-form-field-container-text-color",
+    "--mat-form-field-focus-state-layer-opacity",
+    "--mat-form-field-error-text-color"
+  ],
+  "composedWith": ["input", "select", "datepicker", "autocomplete"],
+  "gotchas": [
+    "A form field expects exactly one form-field control inside it (matInput, mat-select, etc.) — wrapping more than one, or none, is a supported-but-broken layout, not a runtime error, so the label/underline positioning just silently looks wrong.",
+    "`<mat-error>` only renders once the control has been marked `touched`/`dirty` (or its parent form has been submitted) and is `invalid` — a common mistake is expecting it to appear immediately when the control becomes invalid programmatically.",
+    "`appearance=\"outline\"` vs. the default `\"fill\"` changes expected padding/height assumptions across a form — mixing appearances between fields in the same form usually indicates a missed default rather than an intentional choice."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatFormFieldModule, MatInputModule, FormsModule],\n  template: `\n    <mat-form-field appearance=\"outline\">\n      <mat-label>Name</mat-label>\n      <input matInput [(ngModel)]=\"name\" required />\n    </mat-form-field>\n  `,\n})\nexport class ExampleComponent {\n  name = '';\n}\n"
+}

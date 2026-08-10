@@ -1,0 +1,20 @@
+{
+  "name": "navigation",
+  "command": "ng generate @angular/material:navigation",
+  "description": "Generates a standalone navigation component with a MatSidenav + MatToolbar app-shell layout, wired to BreakpointObserver so the sidenav switches between 'over' and 'side' mode responsively.",
+  "options": [
+    { "name": "name", "type": "string", "description": "Name for the new navigation component." },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "Name of the project to add the component to, defaults to the workspace's default project."
+    }
+  ],
+  "generatedFiles": [
+    "<name>.component.ts",
+    "<name>.component.html",
+    "<name>.component.scss",
+    "<name>.component.spec.ts"
+  ],
+  "example": "ng generate @angular/material:navigation nav --project=my-app"
+}

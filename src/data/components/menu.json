@@ -1,0 +1,13 @@
+{
+  "name": "menu",
+  "standaloneImports": ["MatMenuModule"],
+  "ngModule": "MatMenuModule",
+  "cssCustomProperties": ["--mat-menu-container-color", "--mat-menu-item-label-text-color"],
+  "composedWith": ["button"],
+  "gotchas": [
+    "A `mat-menu` renders nothing on its own — it must be opened by a trigger element bound with `[matMenuTriggerFor]`; the menu's template only enters the DOM (inside the CDK overlay container) once opened.",
+    "Nested menus require the submenu's trigger item to itself specify `[matMenuTriggerFor]` pointing at the child `mat-menu` — placing a `mat-menu` inside another `mat-menu`'s template without that binding won't open it as a submenu.",
+    "Clicking a `mat-menu-item` closes the menu automatically; if the click handler is asynchronous, the menu is already closed by the time the handler resolves, so \"still open\" UI feedback needs to live outside the menu."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatMenuModule } from '@angular/material/menu';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule, MatMenuModule],\n  template: `\n    <button mat-button [matMenuTriggerFor]=\"menu\">Actions</button>\n    <mat-menu #menu=\"matMenu\">\n      <button mat-menu-item (click)=\"onEdit()\">Edit</button>\n      <button mat-menu-item (click)=\"onDelete()\">Delete</button>\n    </mat-menu>\n  `,\n})\nexport class ExampleComponent {\n  onEdit(): void {}\n  onDelete(): void {}\n}\n"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "address-form",
+  "command": "ng generate @angular/material:address-form",
+  "description": "Generates a standalone reactive-forms component with a preset shipping-address layout (name, street, city, state, zip) built from MatFormField, matInput, and mat-select.",
+  "options": [
+    { "name": "name", "type": "string", "description": "Name for the new address-form component." },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "Name of the project to add the component to, defaults to the workspace's default project."
+    }
+  ],
+  "generatedFiles": [
+    "<name>.component.ts",
+    "<name>.component.html",
+    "<name>.component.scss",
+    "<name>.component.spec.ts"
+  ],
+  "example": "ng generate @angular/material:address-form shipping-address --project=my-app"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "table",
+  "command": "ng generate @angular/material:table",
+  "description": "Generates a standalone component with a MatTable wired to a static MatTableDataSource, pre-populated with example columns as a starting point to replace with real data.",
+  "options": [
+    { "name": "name", "type": "string", "description": "Name for the new table component." },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "Name of the project to add the component to, defaults to the workspace's default project."
+    }
+  ],
+  "generatedFiles": [
+    "<name>.component.ts",
+    "<name>.component.html",
+    "<name>.component.scss",
+    "<name>.component.spec.ts",
+    "<name>-datasource.ts"
+  ],
+  "example": "ng generate @angular/material:table users-table --project=my-app"
+}

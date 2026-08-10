@@ -1,0 +1,17 @@
+{
+  "name": "table",
+  "standaloneImports": ["MatTableModule"],
+  "ngModule": "MatTableModule",
+  "cssCustomProperties": [
+    "--mat-table-background-color",
+    "--mat-table-header-headline-color",
+    "--mat-table-row-item-label-text-color"
+  ],
+  "composedWith": ["sort", "paginator"],
+  "gotchas": [
+    "MatTableDataSource re-renders only when you reassign its `.data` property (or push through the `data` setter) — mutating the underlying array in place will not update the table.",
+    "Every string in `displayedColumns` must exactly match a `matColumnDef` name, in the order you want columns rendered — a mismatch silently drops the column instead of throwing.",
+    "For large or frequently-changing row sets, provide a `trackBy` on `*matRowDef`/`*matHeaderRowDef` to avoid full DOM re-renders when only a subset of rows change."
+  ],
+  "minimalExample": "import { Component } from '@angular/core';\nimport { MatTableModule } from '@angular/material/table';\n\ninterface Row {\n  name: string;\n  value: number;\n}\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatTableModule],\n  template: `\n    <table mat-table [dataSource]=\"rows\">\n      <ng-container matColumnDef=\"name\">\n        <th mat-header-cell *matHeaderCellDef>Name</th>\n        <td mat-cell *matCellDef=\"let row\">{{ row.name }}</td>\n      </ng-container>\n      <ng-container matColumnDef=\"value\">\n        <th mat-header-cell *matHeaderCellDef>Value</th>\n        <td mat-cell *matCellDef=\"let row\">{{ row.value }}</td>\n      </ng-container>\n      <tr mat-header-row *matHeaderRowDef=\"displayedColumns\"></tr>\n      <tr mat-row *matRowDef=\"let row; columns: displayedColumns\"></tr>\n    </table>\n  `,\n})\nexport class ExampleComponent {\n  displayedColumns = ['name', 'value'];\n  rows: Row[] = [\n    { name: 'Alpha', value: 1 },\n    { name: 'Beta', value: 2 },\n  ];\n}\n"
+}

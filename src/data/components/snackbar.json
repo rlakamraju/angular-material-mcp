@@ -1,0 +1,16 @@
+{
+  "name": "snackbar",
+  "standaloneImports": ["MatSnackBarModule"],
+  "ngModule": "MatSnackBarModule",
+  "cssCustomProperties": [
+    "--mat-snack-bar-container-color",
+    "--mat-snack-bar-supporting-text-color"
+  ],
+  "composedWith": ["button"],
+  "gotchas": [
+    "`MatSnackBar.open()` dismisses any snack bar already showing before showing the new one — you cannot stack multiple snack bars, so rapid successive calls only ever show the latest.",
+    "`duration` in the config only auto-dismisses the snack bar; it does not pause on hover/focus, so a long message the user is still reading can disappear mid-read unless you omit `duration` for that case.",
+    "A custom component passed to `openFromComponent()` cannot inject `MAT_SNACK_BAR_DATA` unless `data` was actually supplied in the config — injecting the token without providing data throws at runtime."
+  ],
+  "minimalExample": "import { Component, inject } from '@angular/core';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';\n\n@Component({\n  selector: 'app-example',\n  standalone: true,\n  imports: [MatButtonModule, MatSnackBarModule],\n  template: `<button mat-button (click)=\"show()\">Notify</button>`,\n})\nexport class ExampleComponent {\n  private snackBar = inject(MatSnackBar);\n\n  show(): void {\n    this.snackBar.open('Saved successfully', 'Dismiss', { duration: 3000 });\n  }\n}\n"
+}

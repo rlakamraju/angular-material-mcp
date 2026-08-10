@@ -1,0 +1,20 @@
+{
+  "name": "dashboard",
+  "command": "ng generate @angular/material:dashboard",
+  "description": "Generates a standalone dashboard component laid out as a responsive grid of mat-card panels, using BreakpointObserver to adjust the column count per viewport size.",
+  "options": [
+    { "name": "name", "type": "string", "description": "Name for the new dashboard component." },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "Name of the project to add the component to, defaults to the workspace's default project."
+    }
+  ],
+  "generatedFiles": [
+    "<name>.component.ts",
+    "<name>.component.html",
+    "<name>.component.scss",
+    "<name>.component.spec.ts"
+  ],
+  "example": "ng generate @angular/material:dashboard dashboard --project=my-app"
+}
