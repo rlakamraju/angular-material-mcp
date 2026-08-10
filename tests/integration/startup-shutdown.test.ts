@@ -1,8 +1,11 @@
 import { spawn } from 'node:child_process';
-import type { ChildProcessWithoutNullStreams } from 'node:child_process';
+import type { ChildProcessByStdio } from 'node:child_process';
 import path from 'node:path';
+import type { Readable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
+
+type SpawnedServer = ChildProcessByStdio<null, null, Readable>;
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DIST_ENTRY = path.resolve(REPO_ROOT, 'dist', 'index.js');
@@ -26,7 +29,7 @@ function waitFor(predicate: () => boolean, timeoutMs = 8000): Promise<void> {
   });
 }
 
-function spawnServer(logLevel: string): { child: ChildProcessWithoutNullStreams; getStderr: () => string } {
+function spawnServer(logLevel: string): { child: SpawnedServer; getStderr: () => string } {
   const child = spawn(process.execPath, [DIST_ENTRY], {
     env: { ...process.env, ANGULAR_PROJECT_PATH: FIXTURE_PROJECT_PATH, LOG_LEVEL: logLevel },
     stdio: ['ignore', 'ignore', 'pipe'],
@@ -39,7 +42,7 @@ function spawnServer(logLevel: string): { child: ChildProcessWithoutNullStreams;
 }
 
 describe('startup banner (stderr, LOG_LEVEL-gated)', () => {
-  let activeChild: ChildProcessWithoutNullStreams | undefined;
+  let activeChild: SpawnedServer | undefined;
 
   afterEach(() => {
     activeChild?.kill();
@@ -79,7 +82,7 @@ describe('startup banner (stderr, LOG_LEVEL-gated)', () => {
 });
 
 describe('graceful shutdown (SIGTERM/SIGINT)', () => {
-  let activeChild: ChildProcessWithoutNullStreams | undefined;
+  let activeChild: SpawnedServer | undefined;
 
   afterEach(() => {
     activeChild?.kill();

@@ -1,6 +1,6 @@
 {
   "name": "angular-material-mcp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server that gives AI coding assistants real-time, structured access to Angular Material component APIs, composition patterns, theming, and schematics.",
   "type": "module",
   "main": "dist/index.js",
@@ -9,6 +9,14 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rlakamraju/angular-material-mcp.git"
+  },
+  "homepage": "https://github.com/rlakamraju/angular-material-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/rlakamraju/angular-material-mcp/issues"
   },
   "files": [
     "dist",

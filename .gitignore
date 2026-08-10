@@ -149,8 +149,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Internal-only docs — not tracked/pushed (revisit README.md exclusion at Phase 16 packaging)
-README.md
+# Internal-only docs — not tracked/pushed. README.md is now published as part of the npm
+# package (Phase 16), so only the internal planning/architecture docs stay ignored.
 angular-material-mcp-architecture.md
 IMPLEMENTATION_PLAN.md
 CLAUDE.md
