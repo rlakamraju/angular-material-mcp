@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ModuleResolutionError,
+  resolveAngularCdk,
   resolveAngularMaterial,
 } from '../../../src/extractors/module-resolver.js';
 
@@ -15,6 +16,7 @@ const FIXTURES_ROOT = path.resolve(
 );
 const MOCK_PROJECT = path.join(FIXTURES_ROOT, 'mock-project');
 const MOCK_PROJECT_NESTED_CWD = path.join(MOCK_PROJECT, 'src', 'app');
+const MOCK_PROJECT_WITH_CDK = path.join(FIXTURES_ROOT, 'mock-project-with-cdk');
 
 describe('resolveAngularMaterial', () => {
   it('resolves via ANGULAR_PROJECT_PATH (env) even when cwd points elsewhere', () => {
@@ -65,5 +67,28 @@ describe('resolveAngularMaterial', () => {
       expect(resolutionError.message).toContain('npm install');
       expect(resolutionError.message).toContain('ANGULAR_PROJECT_PATH');
     }
+  });
+});
+
+describe('resolveAngularCdk', () => {
+  it('resolves @angular/cdk via process.cwd() when the project has it installed', () => {
+    const result = resolveAngularCdk({}, MOCK_PROJECT_WITH_CDK);
+
+    expect(result?.source).toBe('cwd');
+    expect(result?.version).toBe('17.3.0');
+  });
+
+  it('returns undefined (not a throw) when @angular/cdk is not installed in the project', () => {
+    const result = resolveAngularCdk({}, MOCK_PROJECT);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('resolving @angular/cdk does not require @angular/material to also be present', () => {
+    const empty = mkdtempSync(path.join(tmpdir(), 'am-mcp-cdk-only-'));
+
+    expect(resolveAngularCdk({ angularProjectPath: MOCK_PROJECT_WITH_CDK }, empty)?.version).toBe(
+      '17.3.0',
+    );
   });
 });

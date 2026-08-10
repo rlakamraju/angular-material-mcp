@@ -1,0 +1,14 @@
+{
+  "name": "cdk-virtual-scrolling",
+  "description": "Uses CdkVirtualScrollViewport with cdkVirtualFor to render only the rows currently visible in a large list, keeping the DOM small regardless of how many items the underlying array holds.",
+  "components": ["cdk/scrolling"],
+  "standaloneImports": ["ScrollingModule"],
+  "templateCode": "<cdk-virtual-scroll-viewport itemSize=\"48\" class=\"viewport\">\n  <div class=\"row\" *cdkVirtualFor=\"let item of items\">{{ item }}</div>\n</cdk-virtual-scroll-viewport>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { ScrollingModule } from '@angular/cdk/scrolling';\n\n@Component({\n  selector: 'app-virtual-list',\n  standalone: true,\n  imports: [ScrollingModule],\n  templateUrl: './virtual-list.component.html',\n  styles: ['.viewport { height: 400px; width: 100%; }'],\n})\nexport class VirtualListComponent {\n  items = Array.from({ length: 100000 }, (_, i) => `Item #${i}`);\n}\n",
+  "notes": [
+    "itemSize must match each row's actual rendered height in pixels — if the CSS height drifts from itemSize, the viewport's scrollbar length and the visible window of rendered rows both become inaccurate.",
+    "The viewport needs an explicit height (via CSS) to know how many rows fit on screen; without one it collapses to zero height and renders nothing.",
+    "Every *cdkVirtualFor row should render at a uniform height — variable-height rows require a custom VirtualScrollStrategy, since the default FixedSizeVirtualScrollStrategy assumes itemSize is constant."
+  ],
+  "version": "17.3.0"
+}

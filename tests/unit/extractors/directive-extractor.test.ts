@@ -73,4 +73,16 @@ describe('directive-extractor', () => {
     expect(classNames).not.toContain('MatTable');
     expect(classNames).not.toContain('MatPaginator');
   });
+
+  it('prefixes the extracted name with namePrefix when provided (e.g. for a second root like cdk)', () => {
+    const parsed = parsePackage(FIXTURE_ROOT);
+    const directives = extractDirectives(parsed, {
+      packageName: '@angular/material',
+      version: '17.3.0',
+      namePrefix: 'cdk',
+    });
+    const sort = directives.find((directive) => directive.className === 'MatSort');
+
+    expect(sort?.name).toBe('cdk/sort');
+  });
 });

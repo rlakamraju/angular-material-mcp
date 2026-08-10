@@ -1,0 +1,14 @@
+{
+  "name": "cdk-a11y",
+  "description": "Combines cdkTrapFocus with LiveAnnouncer to keep keyboard focus inside a custom modal panel while it's open and announce its opening to screen reader users.",
+  "components": ["cdk/a11y"],
+  "standaloneImports": ["A11yModule"],
+  "templateCode": "<div *ngIf=\"open\" class=\"modal-panel\" cdkTrapFocus cdkTrapFocusAutoCapture role=\"dialog\" aria-modal=\"true\">\n  <h2 #heading tabindex=\"-1\">Confirm action</h2>\n  <button (click)=\"close()\">Close</button>\n</div>\n",
+  "componentCode": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { A11yModule, LiveAnnouncer } from '@angular/cdk/a11y';\n\n@Component({\n  selector: 'app-modal-panel',\n  standalone: true,\n  imports: [CommonModule, A11yModule],\n  templateUrl: './modal-panel.component.html',\n})\nexport class ModalPanelComponent {\n  open = false;\n\n  constructor(private readonly liveAnnouncer: LiveAnnouncer) {}\n\n  show(): void {\n    this.open = true;\n    this.liveAnnouncer.announce('Confirm action dialog opened', 'assertive');\n  }\n\n  close(): void {\n    this.open = false;\n  }\n}\n",
+  "notes": [
+    "cdkTrapFocusAutoCapture moves focus into the panel the moment it's attached — without it, cdkTrapFocus only constrains Tab cycling to elements already inside the panel, but never moves focus there in the first place.",
+    "LiveAnnouncer.announce() injects its text into an off-screen aria-live region rather than the panel itself, so it's heard even when the panel's own heading is only focused, not read aloud, on open.",
+    "cdkTrapFocus does not restore focus to the triggering element when the panel closes — save the previously focused element (document.activeElement) before opening and refocus it explicitly in close()."
+  ],
+  "version": "17.3.0"
+}

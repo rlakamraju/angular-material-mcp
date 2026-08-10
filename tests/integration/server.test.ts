@@ -9,6 +9,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DIST_ENTRY = path.resolve(REPO_ROOT, 'dist', 'index.js');
 const FIXTURE_PROJECT_PATH = path.resolve(REPO_ROOT, 'tests', 'fixtures', 'mock-project');
+const FIXTURE_PROJECT_WITH_CDK_PATH = path.resolve(
+  REPO_ROOT,
+  'tests',
+  'fixtures',
+  'mock-project-with-cdk',
+);
 
 const EXPECTED_TOOL_NAMES = [
   'list_components',
@@ -62,12 +68,17 @@ describe('MCP server integration (JSON-RPC over stdio)', () => {
     expect(tools.map((tool) => tool.name).sort()).toEqual(EXPECTED_TOOL_NAMES);
   }, 10_000);
 
-  it('list_components returns fixture components', async () => {
-    const result = await client.callTool({ name: 'list_components', arguments: {} });
-    expect(result.isError).not.toBe(true);
-    const parsed = parseJson(result as CallToolResult) as { components: { name: string }[] };
-    expect(parsed.components.map((c) => c.name).sort()).toEqual(['paginator', 'sort', 'table']);
-  }, 10_000);
+  it(
+    'list_components returns fixture components, proving material-only tool calls still work ' +
+      'when @angular/cdk is absent (this fixture project has no @angular/cdk installed)',
+    async () => {
+      const result = await client.callTool({ name: 'list_components', arguments: {} });
+      expect(result.isError).not.toBe(true);
+      const parsed = parseJson(result as CallToolResult) as { components: { name: string }[] };
+      expect(parsed.components.map((c) => c.name).sort()).toEqual(['paginator', 'sort', 'table']);
+    },
+    10_000,
+  );
 
   it('get_component_api returns full metadata for a known component', async () => {
     const result = await client.callTool({
@@ -144,5 +155,55 @@ describe('MCP server integration (JSON-RPC over stdio)', () => {
       arguments: {},
     });
     expect(followUp.isError).not.toBe(true);
+  }, 10_000);
+});
+
+/**
+ * Separate server instance pointed at a fixture project with @angular/cdk installed alongside
+ * @angular/material (Phase 13), proving `cdk/*`-namespaced lookups resolve end-to-end through the
+ * real JSON-RPC transport, not just in-process unit tests.
+ */
+describe('MCP server integration with @angular/cdk installed', () => {
+  let client: Client;
+  let transport: StdioClientTransport;
+
+  beforeAll(async () => {
+    transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [DIST_ENTRY],
+      env: {
+        ANGULAR_PROJECT_PATH: FIXTURE_PROJECT_WITH_CDK_PATH,
+        LOG_LEVEL: 'error',
+      },
+    });
+    client = new Client({ name: 'angular-material-mcp-integration-test-cdk', version: '0.0.0' });
+    await client.connect(transport);
+  }, 20_000);
+
+  afterAll(async () => {
+    await client.close();
+  }, 10_000);
+
+  it('list_components includes both material and cdk/-namespaced components', async () => {
+    const result = await client.callTool({ name: 'list_components', arguments: {} });
+    expect(result.isError).not.toBe(true);
+    const parsed = parseJson(result as CallToolResult) as { components: { name: string }[] };
+    expect(parsed.components.map((c) => c.name).sort()).toEqual([
+      'cdk/drag-drop',
+      'paginator',
+      'sort',
+      'table',
+    ]);
+  }, 10_000);
+
+  it('get_component_api("cdk/drag-drop") resolves the CDK-namespaced directive', async () => {
+    const result = await client.callTool({
+      name: 'get_component_api',
+      arguments: { componentName: 'cdk/drag-drop' },
+    });
+    expect(result.isError).not.toBe(true);
+    const parsed = parseJson(result as CallToolResult) as { name: string; className: string };
+    expect(parsed.name).toBe('cdk/drag-drop');
+    expect(parsed.className).toBe('CdkDropList');
   }, 10_000);
 });

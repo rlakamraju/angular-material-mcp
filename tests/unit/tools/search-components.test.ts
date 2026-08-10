@@ -11,7 +11,7 @@ const FIXTURE_ROOT = path.resolve(
   '../../fixtures/mock-angular-material',
 );
 
-const RESOLVED = { packageRoot: FIXTURE_ROOT, version: '17.3.0' };
+const RESOLVED = { material: { packageRoot: FIXTURE_ROOT, version: '17.3.0' } };
 
 function makeComponent(overrides: Partial<ComponentMetadata>): ComponentMetadata {
   return {

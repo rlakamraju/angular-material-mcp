@@ -5,12 +5,19 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createExtractionService } from '../../../src/cache/extraction-service.js';
 import * as tsParser from '../../../src/extractors/ts-parser.js';
 
-const FIXTURE_ROOT = path.resolve(
+const MATERIAL_FIXTURE_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '../../fixtures/mock-angular-material',
 );
+const CDK_FIXTURE_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../../fixtures/mock-angular-cdk',
+);
 
-const RESOLVED = { packageRoot: FIXTURE_ROOT, version: '17.3.0' };
+const MATERIAL_ROOT = { packageRoot: MATERIAL_FIXTURE_ROOT, version: '17.3.0' };
+const CDK_ROOT = { packageRoot: CDK_FIXTURE_ROOT, version: '17.3.0' };
+const RESOLVED = { material: MATERIAL_ROOT };
+const RESOLVED_WITH_CDK = { material: MATERIAL_ROOT, cdk: CDK_ROOT };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -72,5 +79,31 @@ describe('extraction-service', () => {
 
     service.getComponent('table'); // evicted -> forces re-extraction
     expect(parseSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('extraction-service with @angular/cdk as a second root', () => {
+  it('getComponent("cdk/drag-drop") resolves the CDK-namespaced directive', () => {
+    const service = createExtractionService(RESOLVED_WITH_CDK);
+    const dragDrop = service.getComponent('cdk/drag-drop');
+
+    expect(dragDrop?.className).toBe('CdkDropList');
+    expect(dragDrop?.importPath).toBe('@angular/cdk/drag-drop');
+  });
+
+  it('getAllComponents() includes both material and cdk-namespaced names side by side', () => {
+    const service = createExtractionService(RESOLVED_WITH_CDK);
+    const names = service.getAllComponents().map((component) => component.name);
+
+    expect(names).toEqual(
+      expect.arrayContaining(['table', 'paginator', 'sort', 'cdk/drag-drop']),
+    );
+  });
+
+  it('material-only tool calls still work when @angular/cdk is absent (no cdk root passed)', () => {
+    const service = createExtractionService(RESOLVED);
+
+    expect(service.getComponent('cdk/drag-drop')).toBeUndefined();
+    expect(service.getAllComponents().map((c) => c.name)).not.toContain('cdk/drag-drop');
   });
 });

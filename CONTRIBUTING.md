@@ -76,6 +76,20 @@ A missing overlay file is not an error — `get_component_api` simply returns th
 metadata with those fields empty, exactly as it did before curated content existed for that
 component.
 
+### `@angular/cdk` naming convention (Phase 13)
+
+`@angular/cdk` is resolved as an optional second root alongside `@angular/material` (see
+`src/extractors/module-resolver.ts`'s `resolveAngularCdk`). Everything extracted from it is
+namespaced with a `cdk/` prefix — e.g. the `@angular/cdk/drag-drop` subpackage is exposed as
+component name `cdk/drag-drop` (`get_component_api({ componentName: "cdk/drag-drop" })`) — so it
+can never collide with an `@angular/material` subpackage of the same bare name.
+
+Because `src/data/**` filenames must be a plain token with no path separators (see above), a `/`
+in a component name can never be looked up automatically as a `components/*.json` overlay — so
+CDK content is written as `compositions/*.json` entries instead (flat, kebab-case keys like
+`cdk-drag-drop`, not `cdk/drag-drop`), with the namespaced component name listed in that pattern's
+`components` array.
+
 ### Adding or editing a data file
 
 1. Add or edit the `.json` file under the right category directory.
